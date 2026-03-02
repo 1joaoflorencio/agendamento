@@ -1,0 +1,111 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Establishment {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  name        String
+  niche       String   // ex: Barbershop, Beauty Salon...
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  whatsapp_api_url      String?
+  whatsapp_instance_name String?
+  whatsapp_api_key      String?
+  whatsapp_enabled     Boolean  @default(false)
+
+  users       User[]
+  attendants  Attendant[]
+  services    Service[]
+  appointments Appointment[]
+  businessHours BusinessHour[]
+}
+
+model BusinessHour {
+  id               String       @id @default(uuid())
+  establishment_id String
+  day_of_week     Int          // 0 (Sunday) to 6 (Saturday)
+  open_time       String       @default("08:00")
+  close_time      String       @default("18:00")
+  is_closed       Boolean      @default(false)
+
+  establishment    Establishment @relation(fields: [establishment_id], references: [id], onDelete: Cascade)
+
+  @@unique([establishment_id, day_of_week])
+}
+
+model User {
+  id              String   @id // UUID referenciando o id do auth.users (Supabase)
+  email           String   @unique
+  name            String
+  establishment_id String?
+  
+  establishment   Establishment? @relation(fields: [establishment_id], references: [id], onDelete: Cascade)
+}
+
+model Attendant {
+  id              String   @id @default(uuid())
+  tenant_id       String
+  name            String
+  email           String?
+  phone           String?
+  created_at      DateTime @default(now())
+
+  establishment   Establishment @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  services        AttendantService[]
+  appointments    Appointment[]
+}
+
+model Service {
+  id               String   @id @default(uuid())
+  tenant_id        String
+  name             String
+  description      String?
+  duration_minutes Int
+  price            Float
+  created_at       DateTime @default(now())
+
+  establishment    Establishment @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  attendants       AttendantService[]
+  appointments     Appointment[]
+}
+
+model AttendantService {
+  attendant_id String
+  service_id   String
+
+  attendant    Attendant @relation(fields: [attendant_id], references: [id], onDelete: Cascade)
+  service      Service   @relation(fields: [service_id], references: [id], onDelete: Cascade)
+
+  @@id([attendant_id, service_id])
+}
+
+model Appointment {
+  id              String   @id @default(uuid())
+  tenant_id       String
+  client_name     String
+  client_phone    String
+  client_email    String?
+  service_id      String
+  attendant_id    String
+  date_time       DateTime
+  status          String   @default("SCHEDULED") // SCHEDULED, CANCELED, COMPLETED
+  created_at      DateTime @default(now())
+
+  establishment   Establishment @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  service         Service       @relation(fields: [service_id], references: [id], onDelete: Cascade)
+  attendant       Attendant     @relation(fields: [attendant_id], references: [id], onDelete: Cascade)
+}
