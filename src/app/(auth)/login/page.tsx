@@ -68,14 +68,6 @@ export default function LoginPage() {
                         </CardContent>
                     </form>
 
-                    <div className="bg-slate-50/50 p-6 text-center border-t border-slate-100">
-                        <p className="text-sm font-bold text-slate-500">
-                            Ainda não tem uma conta?{' '}
-                            <Link href="/register" className="text-indigo-600 hover:text-indigo-700 transition-colors">
-                                Cadastre-se agora
-                            </Link>
-                        </p>
-                    </div>
                 </Card>
             </div>
         </div>

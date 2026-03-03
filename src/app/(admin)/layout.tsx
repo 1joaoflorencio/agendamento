@@ -3,11 +3,12 @@
 import { createClient } from '@/utils/supabase/client'
 import { redirect, usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { CalendarDays, LayoutDashboard, Settings, Users, LogOut, Menu, Scissors, ChevronRight } from 'lucide-react'
+import { CalendarDays, LayoutDashboard, Settings, Users, LogOut, Menu, Scissors, ChevronRight, Stethoscope, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
 import { useEffect, useState } from 'react'
+import { getTheme } from '@/lib/niche-themes'
 
 export default function AdminLayout({
     children,
@@ -21,21 +22,43 @@ export default function AdminLayout({
 
     useEffect(() => {
         const checkUser = async () => {
+            setIsLoading(true)
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) {
                 window.location.href = '/login'
                 return
             }
 
-            // Busca os dados do estabelecimento via fetch ou similar se necessário, 
-            // mas aqui usaremos a estrutura base que já temos no layout SSR convertido para Client 
-            // apenas para fins estéticos (o ideal seria manter SSR, mas para animações e active states 
-            // dinâmicos de alta fidelidade, o client-side facilita).
-            // NOTA: O arquivo original era async 'use server' por padrão implicitamente.
-            // Para manter a segurança SSR, faremos uma transição suave.
+            // Busca os dados do estabelecimento via API
+            try {
+                const response = await fetch('/api/user/profile')
+                if (response.ok) {
+                    const data = await response.json()
+                    if (data.establishment) {
+                        setEstablishment(data.establishment)
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to fetch profile', error)
+            } finally {
+                setIsLoading(false)
+            }
         }
         checkUser()
-    }, [])
+    }, [pathname])
+
+    const theme = getTheme(establishment?.niche)
+
+    const getNicheIcon = () => {
+        switch (establishment?.niche) {
+            case 'Barbearia': return Scissors
+            case 'Salao de Beleza': return Sparkles
+            case 'Clinica':
+            default: return Stethoscope
+        }
+    }
+
+    const NicheIcon = getNicheIcon()
 
     const navLinks = [
         { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -48,20 +71,22 @@ export default function AdminLayout({
         <div className="flex min-h-screen w-full bg-[#f8fafc]">
             {/* Background Decorativo */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-                <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-indigo-500/5 rounded-full blur-[120px]"></div>
-                <div className="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-violet-500/5 rounded-full blur-[120px]"></div>
+                <div className={cn("absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full blur-[120px] transition-colors duration-1000 opacity-20", theme.bgMuted)}></div>
+                <div className={cn("absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] rounded-full blur-[120px] transition-colors duration-1000 opacity-20", theme.bgMuted)}></div>
             </div>
 
             {/* Sidebar Desktop */}
             <aside className="hidden lg:flex flex-col w-[280px] fixed h-screen z-20 border-r border-slate-200/50 bg-white/70 backdrop-blur-xl shadow-2xl shadow-indigo-500/5">
                 <div className="p-8 pb-4">
                     <Link href="/dashboard" className="flex items-center gap-3 px-2 group">
-                        <div className="w-10 h-10 bg-gradient-to-tr from-indigo-600 to-violet-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200 group-hover:rotate-6 transition-transform duration-500">
-                            <CalendarDays className="h-6 w-6" />
+                        <div className={cn("w-10 h-10 bg-gradient-to-tr rounded-2xl flex items-center justify-center text-white shadow-lg group-hover:rotate-6 transition-all duration-500", theme.gradient, theme.shadow)}>
+                            <NicheIcon className="h-6 w-6" />
                         </div>
                         <div className="flex flex-col overflow-hidden">
                             <span className="font-extrabold text-slate-900 leading-tight truncate">Painel Admin</span>
-                            <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">Sistema de Agendamento</span>
+                            <span className={cn("text-[10px] font-bold uppercase tracking-widest", theme.textPrimary)}>
+                                {establishment?.niche ? theme.label : 'Sistema de Agendamento'}
+                            </span>
                         </div>
                     </Link>
                 </div>
@@ -79,14 +104,14 @@ export default function AdminLayout({
                                 className={cn(
                                     "group relative flex items-center gap-3 px-4 py-3.5 rounded-3xl transition-all duration-300 font-bold overflow-hidden",
                                     isActive
-                                        ? "bg-indigo-600 text-white shadow-xl shadow-indigo-600/20"
-                                        : "text-slate-500 hover:bg-white hover:text-indigo-600 hover:shadow-lg hover:shadow-slate-200/50"
+                                        ? "text-white " + theme.shadow
+                                        : cn("text-slate-500 hover:bg-white hover:shadow-lg hover:shadow-slate-200/50", "hover:" + theme.textPrimary)
                                 )}
                             >
                                 {isActive && (
-                                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-violet-600 opacity-100 z-0"></div>
+                                    <div className={cn("absolute inset-0 bg-gradient-to-r opacity-100 z-0", theme.gradient)}></div>
                                 )}
-                                <link.icon className={cn("h-5 w-5 relative z-10 transition-transform duration-300 group-hover:scale-110", isActive ? "text-white" : "text-slate-400 group-hover:text-indigo-600")} />
+                                <link.icon className={cn("h-5 w-5 relative z-10 transition-transform duration-300 group-hover:scale-110", isActive ? "text-white" : "text-slate-400 group-active:scale-95")} />
                                 <span className="relative z-10">{link.name}</span>
                                 {isActive && <ChevronRight className="h-4 w-4 ml-auto relative z-10 animate-in slide-in-from-left-2 duration-300" />}
                             </Link>
@@ -149,15 +174,29 @@ export default function AdminLayout({
                     </div>
 
                     <div className="hidden lg:flex items-center gap-2">
-                        <h2 className="text-slate-800 font-extrabold text-xl tracking-tight">Estúdio Cristiane França</h2>
-                        <span className="bg-indigo-50 text-indigo-600 p-1.5 px-3 rounded-full text-[10px] font-black uppercase tracking-widest border border-indigo-100">
-                            Pro Plan
-                        </span>
+                        {isLoading ? (
+                            <div className="h-6 w-48 bg-slate-200 animate-pulse rounded-md"></div>
+                        ) : (
+                            <>
+                                <h2 className="text-slate-800 font-extrabold text-xl tracking-tight">
+                                    {establishment?.name || 'Carregando...'}
+                                </h2>
+                                {establishment?.status === 'TRIAL' ? (
+                                    <span className="bg-amber-50 text-amber-600 p-1.5 px-3 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-200 shadow-sm">
+                                        Período de Teste
+                                    </span>
+                                ) : (
+                                    <span className={cn("p-1.5 px-3 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm", theme.bgMuted, theme.textPrimary, theme.borderMuted)}>
+                                        Pro Plan
+                                    </span>
+                                )}
+                            </>
+                        )}
                     </div>
 
                     <div className="flex items-center gap-4">
                         <div className="w-10 h-10 bg-slate-100 rounded-full border-2 border-white shadow-sm flex items-center justify-center font-bold text-slate-500 text-sm">
-                            CF
+                            {establishment?.name ? establishment.name.substring(0, 2).toUpperCase() : 'CF'}
                         </div>
                     </div>
                 </header>

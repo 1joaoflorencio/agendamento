@@ -31,7 +31,7 @@ export async function updateSession(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser()
 
-    const isAuthRoute = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/register')
+    const isAuthRoute = request.nextUrl.pathname.startsWith('/login')
 
     // Protect /onboarding and all /(admin) sub-routes (we'll do blanket check or regex, let's keep it simple for now and assert if there's no user, block it unless it's an auth route). Let's redirect unauthorized to /login.
 

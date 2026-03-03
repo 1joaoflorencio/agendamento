@@ -23,7 +23,10 @@ export default async function TeamPage() {
     })
 
     if (!appUser?.establishment_id) {
-        redirect('/onboarding')
+        if (appUser?.role === 'SUPER_ADMIN') {
+            redirect('/super-admin')
+        }
+        redirect('/login')
     }
 
     const attendants = await prisma.attendant.findMany({

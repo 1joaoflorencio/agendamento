@@ -2,9 +2,10 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import prisma from '@/lib/prisma'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Calendar, Users, ShoppingBag, Clock, User } from 'lucide-react'
+import { Calendar, Users, ShoppingBag, Clock, User, Scissors, Stethoscope, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { getTheme } from '@/lib/niche-themes'
 
 export default async function DashboardPage({
     searchParams
@@ -17,16 +18,36 @@ export default async function DashboardPage({
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) redirect('/login')
 
-    const appUser = await prisma.user.findUnique({
+    const appUser: any = await prisma.user.findUnique({
         where: { id: user.id },
         include: { establishment: true }
     })
 
-    if (!appUser?.establishment_id || !appUser.establishment) {
-        redirect('/onboarding')
+    if (!appUser?.establishment) {
+        if (appUser?.role === 'SUPER_ADMIN') {
+            redirect('/super-admin')
+        }
+        redirect('/login')
     }
 
-    const establishmentId = appUser.establishment_id
+    const establishment = appUser.establishment
+
+    if (establishment.status !== 'ACTIVE' && establishment.trial_ends_at && new Date(establishment.trial_ends_at) < new Date()) {
+        redirect('/expired')
+    }
+
+    const establishmentId = establishment.id
+    const theme = getTheme(establishment.niche)
+
+    const getNicheIcon = () => {
+        switch (establishment.niche) {
+            case 'Barbearia': return Scissors
+            case 'Salao de Beleza': return Sparkles
+            case 'Clinica':
+            default: return Stethoscope
+        }
+    }
+    const NicheIcon = getNicheIcon()
 
     // Cálculo da Semana (Hoje + 6 dias)
     const now = new Date()
@@ -77,8 +98,8 @@ export default async function DashboardPage({
             label: 'Agendamentos da Semana',
             value: totalWeek.toString(),
             icon: Calendar,
-            color: 'text-indigo-600',
-            bg: 'bg-indigo-50'
+            color: theme.textPrimary,
+            bg: theme.bgMuted,
         },
         {
             label: 'Clientes na Semana',
@@ -101,8 +122,8 @@ export default async function DashboardPage({
             {/* Header Focado na Agenda */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white/60 p-8 rounded-[2.5rem] shadow-sm backdrop-blur-md border border-slate-100">
                 <div className="flex items-center gap-6">
-                    <div className="w-16 h-16 bg-gradient-to-tr from-indigo-500 to-violet-500 rounded-3xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
-                        <Calendar className="w-8 h-8" />
+                    <div className={cn("w-16 h-16 bg-gradient-to-tr rounded-3xl flex items-center justify-center text-white shadow-lg", theme.gradient, theme.shadow)}>
+                        <NicheIcon className="w-8 h-8" />
                     </div>
                     <div>
                         <h1 className="text-3xl font-black tracking-tight text-slate-900">
@@ -120,6 +141,25 @@ export default async function DashboardPage({
                         </Button>
                     </a>
                 )}
+            </div>
+
+            {/* Quick Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {stats.map((stat, i) => (
+                    <Card key={i} className="border-none shadow-xl shadow-slate-200/50 bg-white/70 backdrop-blur-sm rounded-[2.5rem] overflow-hidden group hover:scale-[1.02] transition-all duration-500">
+                        <CardContent className="p-8">
+                            <div className="flex items-center justify-between">
+                                <div className={cn("p-4 rounded-3xl transition-colors duration-500", stat.bg)}>
+                                    <stat.icon className={cn("w-6 h-6", stat.color)} />
+                                </div>
+                            </div>
+                            <div className="mt-6">
+                                <p className="text-sm font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{stat.label}</p>
+                                <h3 className="text-3xl font-black text-slate-800 tracking-tighter">{stat.value}</h3>
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
             </div>
 
             {/* Lista Cronológica - Foco Principal */}

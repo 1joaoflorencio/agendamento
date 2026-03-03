@@ -1,0 +1,169 @@
+'use server'
+
+import { createClient } from '@supabase/supabase-js'
+import prisma from '@/lib/prisma'
+import { revalidatePath } from 'next/cache'
+
+// Note: Requires SUPABASE_SERVICE_ROLE_KEY to be set in .env
+const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+        auth: {
+            autoRefreshToken: false,
+            persistSession: false
+        }
+    }
+)
+
+export async function createTrialStore(data: {
+    storeName: string,
+    ownerName: string,
+    email: string,
+    phone: string,
+    niche: string,
+}) {
+    try {
+        const password = Math.random().toString(36).slice(-8)
+
+        // 1. Create User in Supabase Auth using Admin API
+        const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+            email: data.email,
+            password: password,
+            email_confirm: true,
+            user_metadata: {
+                full_name: data.ownerName,
+                phone: data.phone,
+            }
+        })
+
+        if (authError) {
+            console.error('Error creating user in Supabase:', authError)
+            return { error: authError.message }
+        }
+
+        const authUser = authData.user
+
+        // 2. Calculate Trial Date (7 days from now)
+        const trialEndDate = new Date()
+        trialEndDate.setDate(trialEndDate.getDate() + 7)
+
+        // 3. Create Store in Prisma
+        const slug = data.storeName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
+
+        const store = await prisma.establishment.create({
+            data: {
+                name: data.storeName,
+                slug: `${slug}-${Math.floor(Math.random() * 1000)}`,
+                niche: data.niche,
+                status: 'TRIAL',
+                trial_ends_at: trialEndDate,
+            }
+        })
+
+        // 4. Create User in Prisma linked to Store
+        await prisma.user.create({
+            data: {
+                id: authUser.id,
+                email: data.email,
+                name: data.ownerName,
+                role: 'USER', // Standard user for the new store
+                establishment_id: store.id
+            }
+        })
+
+        revalidatePath('/super-admin')
+        return { success: true, store, initialPassword: password }
+    } catch (e: any) {
+        console.error('Error creating trial store:', e)
+        return { error: 'Ocorreu um erro interno ao criar a loja.' }
+    }
+}
+
+export async function deleteStore(storeId: string) {
+    try {
+        const store = await prisma.establishment.findUnique({
+            where: { id: storeId },
+            include: { users: true }
+        })
+
+        if (!store) {
+            return { error: 'Loja não encontrada.' }
+        }
+
+        // 1. Delete user(s) from Supabase Auth
+        for (const user of store.users) {
+            const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(user.id)
+            if (authError) {
+                console.error(`Erro ao deletar usuário ${user.id} do Supabase:`, authError)
+                // Continue deleting others, maybe the user was already deleted
+            }
+        }
+
+        // 2. Delete Store from DB (cascade deletes users and appointments)
+        await prisma.establishment.delete({
+            where: { id: storeId }
+        })
+
+        revalidatePath('/super-admin')
+        return { success: true }
+    } catch (e: any) {
+        console.error('Error deleting store:', e)
+        return { error: 'Ocorreu um erro ao excluir a loja.' }
+    }
+}
+
+export async function updateStore(storeId: string, data: { name?: string, niche?: string, status?: string, trial_ends_at?: string, email?: string }) {
+    try {
+        const payload: any = {}
+        if (data.name) payload.name = data.name
+        if (data.niche) payload.niche = data.niche
+        if (data.status) payload.status = data.status
+        if (data.trial_ends_at) payload.trial_ends_at = new Date(data.trial_ends_at)
+
+        const store = await prisma.establishment.findUnique({
+            where: { id: storeId },
+            include: { users: true }
+        })
+
+        if (!store) {
+            return { error: 'Loja não encontrada.' }
+        }
+
+        if (data.email) {
+            const owner = store.users.find(u => u.role === 'USER')
+            if (owner && owner.email !== data.email) {
+                // Update Supabase Auth Email
+                const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(
+                    owner.id,
+                    { email: data.email, email_confirm: true }
+                )
+                if (authError) {
+                    console.error('Failed to update email in Supabase:', authError)
+                    return { error: 'Erro ao atualizar o email do usuário na autenticação.' }
+                }
+
+                // Update Prisma User Email
+                await prisma.user.update({
+                    where: { id: owner.id },
+                    data: { email: data.email }
+                })
+            } else if (!owner && data.email) {
+                // If there's no USER (only Super Admin), we skip email update for safety
+                // or handle as a custom error. 
+                console.warn('Attempted to update email on store without a regular USER owner.')
+            }
+        }
+
+        await prisma.establishment.update({
+            where: { id: storeId },
+            data: payload
+        })
+
+        revalidatePath('/super-admin')
+        return { success: true }
+    } catch (e: any) {
+        console.error('Error updating store:', e)
+        return { error: 'Ocorreu um erro ao atualizar a loja.' }
+    }
+}

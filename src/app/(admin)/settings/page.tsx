@@ -24,7 +24,10 @@ export default async function SettingsPage() {
     })
 
     if (!appUser?.establishment_id || !appUser.establishment) {
-        redirect('/onboarding')
+        if (appUser?.role === 'SUPER_ADMIN') {
+            redirect('/super-admin')
+        }
+        redirect('/login')
     }
 
     const { establishment } = appUser

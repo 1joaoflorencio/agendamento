@@ -23,7 +23,10 @@ export default async function ServicesPage() {
     })
 
     if (!appUser?.establishment_id) {
-        redirect('/onboarding')
+        if (appUser?.role === 'SUPER_ADMIN') {
+            redirect('/super-admin')
+        }
+        redirect('/login')
     }
 
     const services = await prisma.service.findMany({
