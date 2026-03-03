@@ -14,18 +14,20 @@ export default async function BookingPage({ params }: { params: { slug: string }
     }
 
     return (
-        <div className="min-h-screen bg-muted/20 py-12 px-4 sm:px-6">
-            <div className="max-w-3xl mx-auto space-y-6 text-center">
-                <h1 className="text-4xl font-extrabold tracking-tight text-primary">
-                    {establishment.name}
-                </h1>
-                <p className="text-muted-foreground text-lg uppercase tracking-widest">
-                    {establishment.niche}
-                </p>
+        <div className="min-h-screen bg-slate-50 relative overflow-hidden">
+            {/* Background Decorativo e Elegante */}
+            <div className="absolute top-0 right-0 -translate-y-12 translate-x-1/3">
+                <div className="w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl" />
+            </div>
+            <div className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/4">
+                <div className="w-[600px] h-[600px] bg-violet-500/10 rounded-full blur-3xl opacity-50" />
             </div>
 
-            <div className="mt-8">
-                <BookingForm establishment={establishment} />
+            <div className="relative z-10 w-full min-h-screen flex items-start justify-center pt-10 pb-6 px-4">
+
+                <div className="w-full max-w-2xl">
+                    <BookingForm establishment={establishment} />
+                </div>
             </div>
         </div>
     )

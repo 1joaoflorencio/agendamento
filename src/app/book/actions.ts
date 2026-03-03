@@ -38,7 +38,8 @@ export async function getAvailableTimeSlots(
     dateStr: string // YYYY-MM-DD
 ) {
 
-    const date = new Date(dateStr)
+    // Forçamos o timezone exato da string para não cair no dia anterior em UTC -3
+    const date = new Date(`${dateStr}T00:00:00`);
 
     // 2.2 Busca horários de funcionamento dinâmicos
     const dayOfWeek = date.getDay(); // 0 = Domingo, 1 = Segunda...
@@ -51,13 +52,25 @@ export async function getAvailableTimeSlots(
         }
     });
 
-    // Se o dia estiver explicitamente fechado ou não houver config (e quisermos ser restritivos)
-    if (!businessHour || businessHour.is_closed) {
+    let startHour = 8;
+    let startMin = 0;
+    let endHour = 18;
+    let endMin = 0;
+
+    // Se houver config explícita dizendo que está fechado, retorna vazio
+    if (businessHour && businessHour.is_closed) {
         return [];
     }
 
-    const [startHour, startMin] = businessHour.open_time.split(':').map(Number);
-    const [endHour, endMin] = businessHour.close_time.split(':').map(Number);
+    // Se houver config aberta, usa ela. Senão usa fallback 08 as 18!
+    if (businessHour && !businessHour.is_closed) {
+        const [h1, m1] = businessHour.open_time.split(':').map(Number);
+        const [h2, m2] = businessHour.close_time.split(':').map(Number);
+        startHour = h1;
+        startMin = m1;
+        endHour = h2;
+        endMin = m2;
+    }
 
     const service = await prisma.service.findUnique({
         where: { id: serviceId }
@@ -98,7 +111,6 @@ export async function getAvailableTimeSlots(
 
     const availableSlots: string[] = []
 
-    // Usa os horários configurados do banco
     let currentSlot = new Date(date);
     currentSlot.setHours(startHour, startMin, 0, 0);
 
@@ -106,22 +118,21 @@ export async function getAvailableTimeSlots(
     endOfDayLimit.setHours(endHour, endMin, 0, 0);
 
     const now = new Date();
-
-    const INCREMENT = 30; // Gerar opções de 30 em 30 min
+    const INCREMENT = duration; // o pulo de horário agora segue o tempo exato do serviço
 
     while (addMinutes(currentSlot, duration) <= endOfDayLimit) {
         const slotStart = currentSlot;
         const slotEnd = addMinutes(currentSlot, duration);
 
-        // Pula se o horário já passou
         if (isBefore(slotStart, now)) {
             currentSlot = addMinutes(currentSlot, INCREMENT);
             continue;
         }
 
-        // Checa colisões com outros agendamentos
         let isOverlapping = false;
         for (const interval of blockedIntervals) {
+            // Se o início do slot for antes do fim de um agendamento existente
+            // E o fim do slot for depois do início do agendamento existente => Colisão
             if (isBefore(slotStart, interval.end) && isAfter(slotEnd, interval.start)) {
                 isOverlapping = true;
                 break;
@@ -154,13 +165,14 @@ export async function createPublicAppointment(formData: FormData) {
     }
 
     const [hours, minutes] = timeStr.split(":").map(Number)
-    const dateTime = new Date(dateStr)
+    // Forçamos o timezone local
+    const dateTime = new Date(`${dateStr}T00:00:00`)
     dateTime.setHours(hours, minutes, 0, 0)
 
     // Dupla checagem contra corrida (Dois clientes marcando ao mesmo tempo)
     const availableSlots = await getAvailableTimeSlots(tenant_id, attendant_id, service_id, dateStr);
     if (!availableSlots.includes(timeStr)) {
-        throw new Error("Ops! Este horário acabou de ser reservado. Tente outro.");
+        throw new Error("Ops! Este horário já foi reservado ou ficou indisponível no sistema.");
     }
 
     const appointment = await prisma.appointment.create({

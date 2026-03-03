@@ -105,3 +105,66 @@ export async function testWhatsAppConnection(instanceName: string, apiKey: strin
         throw new Error(error.message || 'Erro de rede ao tentar conectar com a Evolution API.');
     }
 }
+
+export async function updateEstablishmentProfile(formData: FormData) {
+    const tenantId = await getEstablishmentId()
+    if (!tenantId) throw new Error('Não autorizado.')
+
+    const name = formData.get('name') as string
+    const niche = formData.get('niche') as string
+
+    if (!name || !niche) throw new Error('Nome Fantasia e Nicho são obrigatórios.')
+
+    try {
+        await prisma.establishment.update({
+            where: { id: tenantId },
+            data: {
+                name,
+                niche
+            }
+        })
+        revalidatePath('/settings')
+    } catch (e: any) {
+        console.error('ERRO AO SALVAR PERFIL DO ESTABELECIMENTO:', e)
+        throw new Error(`Falha ao atualizar perfil: ${e.message}`)
+    }
+}
+
+export async function updateEstablishmentSlug(newSlug: string) {
+    const tenantId = await getEstablishmentId()
+    if (!tenantId) throw new Error('Não autorizado.')
+
+    if (!newSlug || newSlug.trim() === '') {
+        throw new Error('O link (slug) não pode estar vazio.')
+    }
+
+    // Valida o formato do slug (apenas letras minúsculas, números e hífens)
+    const slugRegex = /^[a-z0-9-]+$/
+    if (!slugRegex.test(newSlug)) {
+        throw new Error('O link deve conter apenas letras minúsculas, números e hífens, sem espaços ou acentos.')
+    }
+
+    try {
+        // Verifica se o slug já existe para OUTRO estabelecimento
+        const existing = await prisma.establishment.findUnique({
+            where: { slug: newSlug },
+            select: { id: true }
+        })
+
+        if (existing && existing.id !== tenantId) {
+            throw new Error('Este link já está em uso por outro estabelecimento. Escolha outro.')
+        }
+
+        await prisma.establishment.update({
+            where: { id: tenantId },
+            data: {
+                slug: newSlug
+            }
+        })
+        revalidatePath('/settings')
+        return { success: true }
+    } catch (e: any) {
+        console.error('ERRO AO ATUALIZAR SLUG:', e)
+        throw new Error(e.message || 'Falha ao atualizar o link do estabelecimento.')
+    }
+}

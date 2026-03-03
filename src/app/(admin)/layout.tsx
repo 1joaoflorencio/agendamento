@@ -61,7 +61,7 @@ export default function AdminLayout({
                         </div>
                         <div className="flex flex-col overflow-hidden">
                             <span className="font-extrabold text-slate-900 leading-tight truncate">Painel Admin</span>
-                            <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">SaaS Agendador</span>
+                            <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">Sistema de Agendamento</span>
                         </div>
                     </Link>
                 </div>

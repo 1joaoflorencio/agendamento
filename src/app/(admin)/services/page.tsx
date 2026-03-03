@@ -10,6 +10,7 @@ import { Trash2, Plus, Scissors, Clock, Banknote, Sparkles, Star } from 'lucide-
 import { Card, CardContent } from '@/components/ui/card'
 import { Service } from '@prisma/client'
 import { cn } from '@/lib/utils'
+import EditServiceDialog from './EditServiceDialog'
 
 export default async function ServicesPage() {
     const supabase = await createClient()
@@ -137,9 +138,7 @@ export default async function ServicesPage() {
                                     </div>
 
                                     <div className="mt-8 flex items-center gap-2 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-                                        <Button variant="outline" className="flex-1 h-14 rounded-full border-2 border-slate-100 font-extrabold text-slate-600 hover:bg-slate-50 text-xs shadow-sm">
-                                            Editar
-                                        </Button>
+                                        <EditServiceDialog service={item} />
                                         <form action={deleteService as any}>
                                             <input type="hidden" name="id" value={item.id} />
                                             <Button variant="ghost" size="icon" className="w-14 h-14 rounded-full text-slate-200 hover:text-red-500 hover:bg-red-50 transition-all" type="submit">

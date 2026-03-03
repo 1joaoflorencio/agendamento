@@ -65,3 +65,37 @@ export async function deleteService(formData: FormData) {
         throw new Error('Falha ao deletar serviço.')
     }
 }
+
+export async function updateService(formData: FormData) {
+    const tenantId = await getEstablishmentId()
+    if (!tenantId) throw new Error('Não autorizado.')
+
+    const id = formData.get('id') as string
+    const name = formData.get('name') as string
+    const description = formData.get('description') as string
+    const duration = parseInt(formData.get('duration') as string, 10)
+    const price = parseFloat(formData.get('price') as string)
+
+    if (!id || !name || isNaN(duration) || isNaN(price)) {
+        throw new Error('Campos obrigatórios inválidos.')
+    }
+
+    try {
+        await prisma.service.update({
+            where: {
+                id,
+                tenant_id: tenantId // Garante que o usuário só edita os seus próprios serviços
+            },
+            data: {
+                name,
+                description: description || null,
+                duration_minutes: duration,
+                price
+            }
+        })
+        revalidatePath('/services')
+    } catch (e) {
+        console.error(e)
+        throw new Error('Falha ao atualizar serviço.')
+    }
+}
