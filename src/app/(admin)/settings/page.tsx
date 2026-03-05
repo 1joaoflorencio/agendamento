@@ -33,16 +33,16 @@ export default async function SettingsPage() {
     const { establishment } = appUser
 
     return (
-        <div className="max-w-5xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+        <div className="max-w-5xl mx-auto space-y-6 md:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
             {/* Header da Página */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
                 <div>
-                    <h1 className="text-4xl font-black tracking-tight text-slate-900">Configurações</h1>
-                    <p className="text-slate-500 font-medium mt-1">Personalize seu espaço e conecte suas ferramentas.</p>
+                    <h1 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900">Configurações</h1>
+                    <p className="text-sm md:text-base text-slate-500 font-medium mt-1">Personalize seu espaço e conecte suas ferramentas.</p>
                 </div>
             </div>
 
-            <div className="grid gap-10">
+            <div className="grid gap-6 md:gap-10">
                 <EstablishmentProfileCard establishment={establishment} />
 
                 <BusinessHoursCard hours={establishment.businessHours} />

@@ -21,7 +21,7 @@ export default function BookingForm({ establishment }: { establishment: any }) {
     const [selectedService, setSelectedService] = useState<any>(null)
     const [selectedAttendant, setSelectedAttendant] = useState<any>(null)
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
-    const [availableSlots, setAvailableSlots] = useState<string[]>([])
+    const [allSlots, setAllSlots] = useState<{ time: string; available: boolean }[]>([])
     const [selectedTime, setSelectedTime] = useState<string | null>(null)
     const [isSlotLoading, setIsSlotLoading] = useState(false)
     const [errorLabel, setErrorLabel] = useState("")
@@ -56,11 +56,11 @@ export default function BookingForm({ establishment }: { establishment: any }) {
             setIsSlotLoading(true)
             const dateStr = format(date, "yyyy-MM-dd")
             getAvailableTimeSlots(establishment.id, selectedAttendant.id, selectedService.id, dateStr)
-                .then(slots => setAvailableSlots(slots))
+                .then(slots => setAllSlots(slots))
                 .catch(e => console.error(e))
                 .finally(() => setIsSlotLoading(false))
         } else {
-            setAvailableSlots([])
+            setAllSlots([])
         }
     }
 
@@ -250,7 +250,7 @@ export default function BookingForm({ establishment }: { establishment: any }) {
                                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                         {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="h-16 bg-slate-100 rounded-2xl animate-pulse" />)}
                                     </div>
-                                ) : availableSlots.length === 0 ? (
+                                ) : allSlots.length === 0 || allSlots.every(s => !s.available) ? (
                                     <div className="bg-slate-50 border-[3px] border-slate-100 rounded-[2.5rem] p-12 text-center shadow-inner mt-4">
                                         <div className="w-16 h-16 bg-slate-200/50 rounded-2xl flex items-center justify-center mx-auto mb-4">
                                             <CalendarIcon className="w-8 h-8 text-slate-400" />
@@ -260,19 +260,27 @@ export default function BookingForm({ establishment }: { establishment: any }) {
                                     </div>
                                 ) : (
                                     <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 sm:gap-3 max-h-[350px] overflow-y-auto p-2 sm:p-3 -m-2 sm:-m-3 scrollbar-thin scrollbar-thumb-indigo-100">
-                                        {availableSlots.map(time => (
+                                        {allSlots.map(slot => (
                                             <Button
-                                                key={time}
+                                                key={slot.time}
                                                 variant="outline"
                                                 className={cn(
-                                                    "h-auto py-2.5 text-base sm:text-lg font-black rounded-xl sm:rounded-2xl border-2 transition-all hover:scale-105 active:scale-95 duration-200",
-                                                    selectedTime === time
-                                                        ? "border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-200"
-                                                        : "border-slate-100 hover:border-indigo-500/30 hover:bg-indigo-50 text-slate-700 bg-white"
+                                                    "h-auto py-2.5 text-base sm:text-lg font-black rounded-xl sm:rounded-2xl border-2 transition-all duration-200",
+                                                    !slot.available
+                                                        ? "border-slate-100 bg-slate-50 text-slate-300 line-through cursor-not-allowed opacity-60"
+                                                        : selectedTime === slot.time
+                                                            ? "border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-200"
+                                                            : "border-slate-100 hover:border-indigo-500/30 hover:bg-indigo-50 text-slate-700 bg-white hover:scale-105 active:scale-95"
                                                 )}
-                                                onClick={() => handleTimeSelect(time)}
+                                                onClick={() => {
+                                                    if (!slot.available) {
+                                                        alert('Este horário já está ocupado. Por favor, escolha outro horário disponível.')
+                                                        return
+                                                    }
+                                                    handleTimeSelect(slot.time)
+                                                }}
                                             >
-                                                {time}
+                                                {slot.time}
                                             </Button>
                                         ))}
                                     </div>

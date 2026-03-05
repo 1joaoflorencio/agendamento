@@ -1,12 +1,17 @@
+'use client'
+
+import { useState } from 'react'
 import { login } from '../actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
-import { CalendarDays } from 'lucide-react'
+import { CalendarDays, Eye, EyeOff } from 'lucide-react'
 
 export default function LoginPage() {
+    const [showPassword, setShowPassword] = useState(false)
+
     return (
         <div className="min-h-screen w-full flex items-center justify-center bg-slate-50 relative overflow-hidden selection:bg-indigo-500/30">
             {/* Background Decorativo */}
@@ -52,14 +57,24 @@ export default function LoginPage() {
                                         Senha
                                     </Label>
                                 </div>
-                                <Input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    placeholder="••••••••"
-                                    required
-                                    className="h-14 rounded-2xl border-2 border-slate-100 bg-slate-50/50 font-bold text-slate-700 focus:border-indigo-500/50 focus:bg-white transition-all px-5 tracking-widest"
-                                />
+                                <div className="relative">
+                                    <Input
+                                        id="password"
+                                        name="password"
+                                        type={showPassword ? 'text' : 'password'}
+                                        placeholder="••••••••"
+                                        required
+                                        className="h-14 rounded-2xl border-2 border-slate-100 bg-slate-50/50 font-bold text-slate-700 focus:border-indigo-500/50 focus:bg-white transition-all px-5 pr-12 tracking-widest"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition-colors focus:outline-none"
+                                        aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                                    >
+                                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                    </button>
+                                </div>
                             </div>
 
                             <Button className="w-full h-14 rounded-2xl bg-slate-900 hover:bg-black text-white font-black text-lg transition-all shadow-xl shadow-slate-900/10 hover:-translate-y-1 mt-4" formAction={login}>

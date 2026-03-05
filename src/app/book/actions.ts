@@ -109,7 +109,7 @@ export async function getAvailableTimeSlots(
         })
     )
 
-    const availableSlots: string[] = []
+    const allSlots: { time: string; available: boolean }[] = []
 
     let currentSlot = new Date(date);
     currentSlot.setHours(startHour, startMin, 0, 0);
@@ -123,30 +123,28 @@ export async function getAvailableTimeSlots(
     while (addMinutes(currentSlot, duration) <= endOfDayLimit) {
         const slotStart = currentSlot;
         const slotEnd = addMinutes(currentSlot, duration);
+        const timeStr = format(slotStart, "HH:mm");
 
         if (isBefore(slotStart, now)) {
+            allSlots.push({ time: timeStr, available: false });
             currentSlot = addMinutes(currentSlot, INCREMENT);
             continue;
         }
 
         let isOverlapping = false;
         for (const interval of blockedIntervals) {
-            // Se o início do slot for antes do fim de um agendamento existente
-            // E o fim do slot for depois do início do agendamento existente => Colisão
             if (isBefore(slotStart, interval.end) && isAfter(slotEnd, interval.start)) {
                 isOverlapping = true;
                 break;
             }
         }
 
-        if (!isOverlapping) {
-            availableSlots.push(format(slotStart, "HH:mm"));
-        }
+        allSlots.push({ time: timeStr, available: !isOverlapping });
 
         currentSlot = addMinutes(currentSlot, INCREMENT);
     }
 
-    return availableSlots;
+    return allSlots;
 }
 
 // 3. Create Appointment (Public Booking)
@@ -170,8 +168,9 @@ export async function createPublicAppointment(formData: FormData) {
     dateTime.setHours(hours, minutes, 0, 0)
 
     // Dupla checagem contra corrida (Dois clientes marcando ao mesmo tempo)
-    const availableSlots = await getAvailableTimeSlots(tenant_id, attendant_id, service_id, dateStr);
-    if (!availableSlots.includes(timeStr)) {
+    const allSlots = await getAvailableTimeSlots(tenant_id, attendant_id, service_id, dateStr);
+    const requestedSlot = allSlots.find(s => s.time === timeStr);
+    if (!requestedSlot || !requestedSlot.available) {
         throw new Error("Ops! Este horário já foi reservado ou ficou indisponível no sistema.");
     }
 

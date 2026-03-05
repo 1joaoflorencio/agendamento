@@ -111,16 +111,14 @@ export async function updateEstablishmentProfile(formData: FormData) {
     if (!tenantId) throw new Error('Não autorizado.')
 
     const name = formData.get('name') as string
-    const niche = formData.get('niche') as string
 
-    if (!name || !niche) throw new Error('Nome Fantasia e Nicho são obrigatórios.')
+    if (!name) throw new Error('Nome Fantasia é obrigatório.')
 
     try {
         await prisma.establishment.update({
             where: { id: tenantId },
             data: {
-                name,
-                niche
+                name
             }
         })
         revalidatePath('/settings')

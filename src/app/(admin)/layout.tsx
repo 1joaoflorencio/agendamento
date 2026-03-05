@@ -61,7 +61,7 @@ export default function AdminLayout({
     const NicheIcon = getNicheIcon()
 
     const navLinks = [
-        { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+        { name: 'Agenda', href: '/dashboard', icon: LayoutDashboard },
         { name: 'Equipe', href: '/team', icon: Users },
         { name: 'Serviços', href: '/services', icon: Scissors },
         { name: 'Configurações', href: '/settings', icon: Settings },
@@ -134,9 +134,9 @@ export default function AdminLayout({
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 lg:ml-[280px] flex flex-col min-h-screen relative z-10">
+            <main className="flex-1 lg:ml-[280px] flex flex-col min-h-screen relative z-10 min-w-0 overflow-hidden">
                 {/* Header Dinâmico */}
-                <header className="h-20 flex items-center justify-between px-8 sticky top-0 bg-white/40 backdrop-blur-md border-b border-slate-200/50 z-20">
+                <header className="h-16 sm:h-20 flex items-center justify-between px-4 sm:px-8 sticky top-0 bg-white/40 backdrop-blur-md border-b border-slate-200/50 z-20">
                     <div className="lg:hidden">
                         <Sheet>
                             <SheetTrigger asChild>
@@ -201,7 +201,7 @@ export default function AdminLayout({
                     </div>
                 </header>
 
-                <div className="flex-1 p-8 pt-10">
+                <div className="flex-1 p-4 pt-6 sm:p-8 sm:pt-10 overflow-x-hidden">
                     {children}
                 </div>
             </main>
