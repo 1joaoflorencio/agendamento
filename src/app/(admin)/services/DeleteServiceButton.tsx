@@ -24,8 +24,8 @@ export default function DeleteServiceButton({ id, name }: DeleteServiceButtonPro
         startTransition(async () => {
             try {
                 await deleteService(formData)
-            } catch (error: any) {
-                alert(error.message || 'Erro ao excluir serviço.')
+            } catch (error) {
+                alert((error as Error).message || 'Erro ao excluir serviço.')
             }
         })
     }

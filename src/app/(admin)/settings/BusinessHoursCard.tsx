@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { updateBusinessHours } from './actions'
-import { Clock, Save, CheckCircle2, XCircle, CalendarClock } from 'lucide-react'
+import { Save, CheckCircle2, CalendarClock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 
@@ -19,7 +19,7 @@ const DAYS = [
     { id: 0, name: 'Domingo', short: 'Dom' },
 ]
 
-export default function BusinessHoursCard({ hours }: { hours: any[] }) {
+export default function BusinessHoursCard({ hours }: { hours: { id?: string; day_of_week: number; open_time: string; close_time: string; is_closed: boolean }[] }) {
     const [isPending, startTransition] = useTransition()
     const [savedSuccessfully, setSavedSuccessfully] = useState(false)
 
@@ -37,7 +37,7 @@ export default function BusinessHoursCard({ hours }: { hours: any[] }) {
         })
     )
 
-    const handleChange = (dayId: number, field: string, value: any) => {
+    const handleChange = (dayId: number, field: string, value: string | boolean) => {
         setSavedSuccessfully(false)
         setSchedule(prev => prev.map(s =>
             s.day_of_week === dayId ? { ...s, [field]: value } : s
@@ -47,12 +47,17 @@ export default function BusinessHoursCard({ hours }: { hours: any[] }) {
     const handleSave = () => {
         startTransition(async () => {
             try {
-                const dataToSave = schedule.map(({ name, short, ...rest }) => rest)
+                const dataToSave = schedule.map((s) => ({
+                    day_of_week: s.day_of_week,
+                    open_time: s.open_time,
+                    close_time: s.close_time,
+                    is_closed: s.is_closed
+                }))
                 await updateBusinessHours(dataToSave)
                 setSavedSuccessfully(true)
                 setTimeout(() => setSavedSuccessfully(false), 3000)
-            } catch (error: any) {
-                alert(error.message)
+            } catch (error) {
+                alert((error as Error).message)
             }
         })
     }

@@ -1,22 +1,10 @@
 'use server'
 
-import { createClient } from '@/utils/supabase/server'
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
+import { getEstablishmentId } from '@/lib/auth'
 
-// Pega Estabelecimento do logado helper
-async function getEstablishmentId() {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return null
 
-    const appUser = await prisma.user.findUnique({
-        where: { id: user.id },
-        select: { establishment_id: true }
-    })
-
-    return appUser?.establishment_id || null
-}
 
 export async function createAttendant(formData: FormData) {
     const tenantId = await getEstablishmentId()

@@ -5,20 +5,30 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import prisma from '@/lib/prisma'
 
-export async function login(formData: FormData) {
+export async function login(prevState: any, formData: FormData) {
     const supabase = await createClient()
 
-    // type-casting here for convenience
-    // in practice, you should validate your inputs
-    const data = {
-        email: formData.get('email') as string,
-        password: formData.get('password') as string,
+    const email = (formData.get('email') as string || '').trim()
+    const password = formData.get('password') as string || ''
+
+    // Input validation
+    if (!email || !password) {
+        return { error: 'Email e senha são obrigatórios.' }
     }
 
-    const { data: authData, error } = await supabase.auth.signInWithPassword(data)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+        return { error: 'Formato de email inválido.' }
+    }
+
+    if (password.length < 6) {
+        return { error: 'A senha deve ter no mínimo 6 caracteres.' }
+    }
+
+    const { data: authData, error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) {
-        throw new Error(error.message)
+        return { error: error.message === 'Invalid login credentials' ? 'Email ou senha incorretos.' : error.message }
     }
 
     if (authData?.user) {

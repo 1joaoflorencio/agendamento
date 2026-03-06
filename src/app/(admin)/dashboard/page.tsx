@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import prisma from '@/lib/prisma'
 import { getTheme } from '@/lib/niche-themes'
 import AgendaView from './AgendaView'
+import type { Appointment } from '@/types'
 
 export default async function DashboardPage({
     searchParams
@@ -15,7 +16,7 @@ export default async function DashboardPage({
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) redirect('/login')
 
-    const appUser: any = await prisma.user.findUnique({
+    const appUser = await prisma.user.findUnique({
         where: { id: user.id },
         include: { establishment: true }
     })
@@ -70,8 +71,9 @@ export default async function DashboardPage({
 
     return (
         <AgendaView
-            appointments={appointments}
+            appointments={appointments as unknown as Appointment[]}
             attendants={attendants}
+            initialDate={now.toISOString()}
             theme={theme}
         />
     )

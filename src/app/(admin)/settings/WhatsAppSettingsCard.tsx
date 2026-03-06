@@ -9,8 +9,9 @@ import { updateWhatsAppSettings, testWhatsAppConnection } from './actions'
 import { MessageSquare, ShieldCheck, Zap, Globe, Key, AlertCircle, CheckCircle2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Switch } from '@/components/ui/switch'
+import type { Establishment } from '@/types'
 
-export default function WhatsAppSettingsCard({ establishment }: { establishment: any }) {
+export default function WhatsAppSettingsCard({ establishment }: { establishment: Pick<Establishment, 'whatsapp_enabled' | 'whatsapp_api_url' | 'whatsapp_instance_name' | 'whatsapp_api_key'> }) {
     const [isPending, startTransition] = useTransition()
     const [isTesting, setIsTesting] = useState(false)
     const [apiUrl, setApiUrl] = useState(establishment.whatsapp_api_url || '')
@@ -30,8 +31,8 @@ export default function WhatsAppSettingsCard({ establishment }: { establishment:
             try {
                 await updateWhatsAppSettings(formData)
                 alert('Configurações de integração salvas!')
-            } catch (error: any) {
-                alert(error.message)
+            } catch (error) {
+                alert((error as Error).message)
             }
         })
     }
@@ -54,8 +55,8 @@ export default function WhatsAppSettingsCard({ establishment }: { establishment:
                     message: `Instância: ${result.instance?.state || 'Desconectada'}. Escaneie o QR Code no Evolution.`
                 })
             }
-        } catch (error: any) {
-            setTestResult({ success: false, message: `Erro: ${error.message}` })
+        } catch (error) {
+            setTestResult({ success: false, message: `Erro: ${(error as Error).message}` })
         } finally {
             setIsTesting(false)
         }

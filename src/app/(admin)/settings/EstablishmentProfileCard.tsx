@@ -39,8 +39,8 @@ export default function EstablishmentProfileCard({ establishment }: Establishmen
         try {
             await updateEstablishmentSlug(slugInput)
             setIsEditingSlug(false)
-        } catch (error: any) {
-            setSlugError(error.message)
+        } catch (error) {
+            setSlugError((error as Error).message)
         } finally {
             setIsSavingSlug(false)
         }

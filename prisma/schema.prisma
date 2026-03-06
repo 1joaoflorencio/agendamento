@@ -24,6 +24,7 @@ model Establishment {
 
   status          String   @default("TRIAL") // TRIAL, ACTIVE, EXPIRED
   trial_ends_at   DateTime?
+  initial_password String?
 
   whatsapp_api_url      String?
   whatsapp_instance_name String?
@@ -112,4 +113,8 @@ model Appointment {
   establishment   Establishment @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
   service         Service       @relation(fields: [service_id], references: [id], onDelete: Cascade)
   attendant       Attendant     @relation(fields: [attendant_id], references: [id], onDelete: Cascade)
+
+  @@index([tenant_id, date_time])
+  @@index([attendant_id, date_time])
+  @@index([tenant_id, attendant_id, status])
 }

@@ -4,48 +4,53 @@ import { useState, useTransition } from "react"
 import { format, isBefore, startOfDay } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { Calendar } from "@/components/ui/calendar"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { getAvailableTimeSlots, createPublicAppointment } from "../actions"
-import { CalendarIcon, Clock, ArrowLeft, CheckCircle2, User, Scissors, Calendar as CalendarLucide, Download, Search, ChevronRight } from "lucide-react"
+import { CalendarIcon, Clock, ArrowLeft, CheckCircle2, User, Scissors, Calendar as CalendarLucide, Search, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { generateGoogleCalendarLink, generateIcsContent } from "@/lib/calendar"
+import type { Establishment, Service, AttendantWithServices, TimeSlot } from "@/types"
 
-export default function BookingForm({ establishment }: { establishment: any }) {
+export default function BookingForm({ establishment }: { establishment: Establishment }) {
     const [step, setStep] = useState(1)
     const [isPending, startTransition] = useTransition()
 
     // Seletions
-    const [selectedService, setSelectedService] = useState<any>(null)
-    const [selectedAttendant, setSelectedAttendant] = useState<any>(null)
+    const [selectedService, setSelectedService] = useState<Service | null>(null)
+    const [selectedAttendant, setSelectedAttendant] = useState<AttendantWithServices | null>(null)
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
-    const [allSlots, setAllSlots] = useState<{ time: string; available: boolean }[]>([])
+    const [allSlots, setAllSlots] = useState<TimeSlot[]>([])
     const [selectedTime, setSelectedTime] = useState<string | null>(null)
     const [isSlotLoading, setIsSlotLoading] = useState(false)
     const [errorLabel, setErrorLabel] = useState("")
     const [searchQuery, setSearchQuery] = useState("")
 
-    const { services, attendants } = establishment
+    const { services } = establishment
 
-    const filteredServices = services.filter((svc: any) =>
+    const filteredServices = services.filter((svc: Service) =>
         svc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (svc.description && svc.description.toLowerCase().includes(searchQuery.toLowerCase()))
     )
 
     // Passo 2: Profissionais (Filtrados pelo serviço ou todos se não houver vínculos)
-    const attendantsForService = establishment.attendants.filter((att: any) =>
-        att.services.length === 0 || att.services.some((s: any) => s.service_id === selectedService?.id)
+    const attendantsForService = establishment.attendants.filter((att: AttendantWithServices) =>
+        att.services.length === 0 || att.services.some(s => s.service_id === selectedService?.id)
     )
 
-    const handleServiceSelect = (service: any) => {
+    const handleServiceSelect = (service: Service) => {
         setSelectedService(service)
         setStep(2)
     }
 
-    const handleAttendantSelect = (attendant: any) => {
+    const handleAttendantSelect = (attendant: AttendantWithServices) => {
         setSelectedAttendant(attendant)
+        // Limpar dados do profissional anterior
+        setAllSlots([])
+        setSelectedTime(null)
+        setSelectedDate(undefined)
         setStep(3)
     }
 
@@ -75,8 +80,8 @@ export default function BookingForm({ establishment }: { establishment: any }) {
             try {
                 await createPublicAppointment(formData)
                 setStep(5) // Sucesso!
-            } catch (error: any) {
-                setErrorLabel(error.message || "Erro ao agendar.")
+            } catch (error) {
+                setErrorLabel((error as Error).message || "Erro ao agendar.")
             }
         })
     }
@@ -135,7 +140,7 @@ export default function BookingForm({ establishment }: { establishment: any }) {
 
                         {/* LISTA DE SERVICOS */}
                         <div className="grid gap-4">
-                            {filteredServices.map((svc: any) => (
+                            {filteredServices.map((svc: Service) => (
                                 <Card
                                     key={svc.id}
                                     className="group cursor-pointer transition-all duration-300 border-2 border-slate-100 hover:border-indigo-300 hover:shadow-md hover:shadow-indigo-500/10 hover:-translate-y-[1px] overflow-hidden relative bg-white/90 backdrop-blur-xl rounded-[1rem]"
@@ -179,7 +184,7 @@ export default function BookingForm({ establishment }: { establishment: any }) {
                             </h2>
                         </div>
                         <div className="grid grid-cols-2 gap-3 sm:gap-5 max-w-2xl mx-auto w-full">
-                            {attendantsForService.map((att: any) => (
+                            {attendantsForService.map((att: AttendantWithServices) => (
                                 <Card
                                     key={att.id}
                                     className="group cursor-pointer transition-all duration-300 border-2 border-slate-100 hover:border-indigo-300 hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-1 overflow-hidden relative bg-white/90 backdrop-blur-xl rounded-[1.5rem] flex flex-col items-center justify-center p-5 sm:p-6 text-center"
@@ -368,7 +373,7 @@ export default function BookingForm({ establishment }: { establishment: any }) {
 
                     const googleLink = generateGoogleCalendarLink(calendarData)
 
-                    const handleDownloadIcs = () => {
+                    const handleIcs = () => {
                         const icsContent = generateIcsContent(calendarData)
                         const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" })
                         const url = window.URL.createObjectURL(blob)
@@ -420,7 +425,7 @@ export default function BookingForm({ establishment }: { establishment: any }) {
                                         <CalendarLucide className="w-4 h-4 mr-2" /> Google Agenda
                                     </a>
                                 </Button>
-                                <Button variant="outline" className="w-full h-12 rounded-xl border-2 border-slate-200 font-black text-slate-700 hover:bg-slate-50 transition-all hover:-translate-y-1 active:scale-95 text-sm bg-white" onClick={handleDownloadIcs}>
+                                <Button variant="outline" className="w-full h-12 rounded-xl border-2 border-slate-200 font-black text-slate-700 hover:bg-slate-50 transition-all hover:-translate-y-1 active:scale-95 text-sm bg-white" onClick={handleIcs}>
                                     <CalendarLucide className="w-4 h-4 mr-2" /> Apple Calendar
                                 </Button>
                             </div>

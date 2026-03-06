@@ -23,8 +23,10 @@ export async function createTrialStore(data: {
     phone: string,
     niche: string,
 }) {
+    let authUserId: string | null = null;
     try {
         const password = Math.random().toString(36).slice(-8)
+        console.log(`[createTrialStore] Attempting to create user with email: ${data.email}`)
 
         // 1. Create User in Supabase Auth using Admin API
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
@@ -42,6 +44,7 @@ export async function createTrialStore(data: {
             return { error: authError.message }
         }
 
+        authUserId = authData.user.id;
         const authUser = authData.user
 
         // 2. Calculate Trial Date (7 days from now)
@@ -58,6 +61,7 @@ export async function createTrialStore(data: {
                 niche: data.niche,
                 status: 'TRIAL',
                 trial_ends_at: trialEndDate,
+                initial_password: password,
             }
         })
 
@@ -74,9 +78,13 @@ export async function createTrialStore(data: {
 
         revalidatePath('/super-admin')
         return { success: true, store, initialPassword: password }
-    } catch (e: any) {
+    } catch (e) {
         console.error('Error creating trial store:', e)
-        return { error: 'Ocorreu um erro interno ao criar a loja.' }
+        if (authUserId) {
+            console.log(`Rolling back user creation for ${authUserId}`)
+            await supabaseAdmin.auth.admin.deleteUser(authUserId)
+        }
+        return { error: 'Ocorreu um erro interno de conexão. Você adicionou uma nova funcionalidade recentemente? Reinicie seu servidor (npm run dev) e tente novamente.' }
     }
 }
 
@@ -91,31 +99,36 @@ export async function deleteStore(storeId: string) {
             return { error: 'Loja não encontrada.' }
         }
 
-        // 1. Delete user(s) from Supabase Auth
-        for (const user of store.users) {
-            const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(user.id)
-            if (authError) {
-                console.error(`Erro ao deletar usuário ${user.id} do Supabase:`, authError)
-                // Continue deleting others, maybe the user was already deleted
-            }
-        }
-
-        // 2. Delete Store from DB (cascade deletes users and appointments)
+        // 1. Delete Store from DB (cascade deletes users and appointments in DB)
         await prisma.establishment.delete({
             where: { id: storeId }
         })
 
+        // 2. Delete user(s) from Supabase Auth based on the users attached in Prisma
+        // This is safe to do after because even if it fails, a ghost account in Supabase 
+        // without a DB record is better than a broken DB record without a Supabase login.
+        for (const user of store.users) {
+            if (user.role === 'USER') {
+                const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(user.id)
+                if (authError) {
+                    console.error(`Erro ao deletar usuário ${user.id} do Supabase:`, authError)
+                } else {
+                    console.log(`Successfully deleted ${user.email} from Supabase Auth`)
+                }
+            }
+        }
+
         revalidatePath('/super-admin')
         return { success: true }
-    } catch (e: any) {
+    } catch (e) {
         console.error('Error deleting store:', e)
-        return { error: 'Ocorreu um erro ao excluir a loja.' }
+        return { error: 'Ocorreu um erro ao excluir a loja. Tente reiniciar seu servidor (npm run dev).' }
     }
 }
 
 export async function updateStore(storeId: string, data: { name?: string, niche?: string, status?: string, trial_ends_at?: string, email?: string }) {
     try {
-        const payload: any = {}
+        const payload: Partial<{ name: string, niche: string, status: string, trial_ends_at: Date }> = {}
         if (data.name) payload.name = data.name
         if (data.niche) payload.niche = data.niche
         if (data.status) payload.status = data.status
@@ -162,7 +175,7 @@ export async function updateStore(storeId: string, data: { name?: string, niche?
 
         revalidatePath('/super-admin')
         return { success: true }
-    } catch (e: any) {
+    } catch (e) {
         console.error('Error updating store:', e)
         return { error: 'Ocorreu um erro ao atualizar a loja.' }
     }

@@ -3,19 +3,9 @@
 import { createClient } from '@/utils/supabase/server'
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
+import { getEstablishmentId } from '@/lib/auth'
 
-async function getEstablishmentId() {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return null
 
-    const appUser = await prisma.user.findUnique({
-        where: { id: user.id },
-        select: { establishment_id: true }
-    })
-
-    return appUser?.establishment_id || null
-}
 
 export async function updateWhatsAppSettings(formData: FormData) {
     const tenantId = await getEstablishmentId()
@@ -37,9 +27,9 @@ export async function updateWhatsAppSettings(formData: FormData) {
             }
         })
         revalidatePath('/settings')
-    } catch (e: any) {
+    } catch (e) {
         console.error('ERRO AO SALVAR WHATSAPP:', e)
-        throw new Error(`Falha ao atualizar configurações: ${e.message}`)
+        throw new Error(`Falha ao atualizar configurações: ${(e as Error).message}`)
     }
 }
 
@@ -73,9 +63,9 @@ export async function updateBusinessHours(hours: { day_of_week: number, open_tim
             )
         )
         revalidatePath('/settings')
-    } catch (e: any) {
+    } catch (e) {
         console.error('ERRO AO SALVAR HORÁRIOS:', e)
-        throw new Error(`Falha ao atualizar horários: ${e.message}`)
+        throw new Error(`Falha ao atualizar horários: ${(e as Error).message}`)
     }
 }
 
@@ -101,8 +91,8 @@ export async function testWhatsAppConnection(instanceName: string, apiKey: strin
 
         const data = await response.json();
         return data; // Retorna o estado da conexão (open, close, etc)
-    } catch (error: any) {
-        throw new Error(error.message || 'Erro de rede ao tentar conectar com a Evolution API.');
+    } catch (error) {
+        throw new Error((error as Error).message || 'Erro de rede ao tentar conectar com a Evolution API.');
     }
 }
 
@@ -122,9 +112,9 @@ export async function updateEstablishmentProfile(formData: FormData) {
             }
         })
         revalidatePath('/settings')
-    } catch (e: any) {
+    } catch (e) {
         console.error('ERRO AO SALVAR PERFIL DO ESTABELECIMENTO:', e)
-        throw new Error(`Falha ao atualizar perfil: ${e.message}`)
+        throw new Error(`Falha ao atualizar perfil: ${(e as Error).message}`)
     }
 }
 
@@ -161,8 +151,8 @@ export async function updateEstablishmentSlug(newSlug: string) {
         })
         revalidatePath('/settings')
         return { success: true }
-    } catch (e: any) {
+    } catch (e) {
         console.error('ERRO AO ATUALIZAR SLUG:', e)
-        throw new Error(e.message || 'Falha ao atualizar o link do estabelecimento.')
+        throw new Error((e as Error).message || 'Falha ao atualizar o link do estabelecimento.')
     }
 }

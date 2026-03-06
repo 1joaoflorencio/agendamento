@@ -38,8 +38,6 @@ export async function sendWhatsAppMessage(tenantId: string, phone: string, text:
     }
 
     try {
-        console.log(`[WhatsApp] Tentando enviar para ${cleanPhone} via ${apiUrl} (Instância: ${establishment.whatsapp_instance_name})`)
-
         const response = await fetch(`${apiUrl}/message/sendText/${establishment.whatsapp_instance_name}`, {
             method: 'POST',
             headers: {
@@ -60,14 +58,13 @@ export async function sendWhatsAppMessage(tenantId: string, phone: string, text:
         const data = await response.json()
 
         if (!response.ok) {
-            console.error('[WhatsApp Error Response]', data)
+            console.error('[WhatsApp] Falha no envio:', response.status)
             return { success: false, data }
         }
 
-        console.log(`[WhatsApp Success] Mensagem enviada para ${phone}`, data)
         return { success: true, data }
     } catch (error) {
-        console.error('[WhatsApp Error] Falha ao enviar mensagem:', error)
+        console.error('[WhatsApp] Erro de rede ao enviar mensagem')
         return { success: false, error }
     }
 }

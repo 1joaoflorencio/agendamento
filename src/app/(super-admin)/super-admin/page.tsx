@@ -21,10 +21,10 @@ export default async function SuperAdminPage() {
     const trialStores = stores.filter(s => s.status === 'TRIAL').length
 
     return (
-        <div className="space-y-10 animate-in fade-in duration-700 pb-20">
+        <div className="space-y-6 md:space-y-10 animate-in fade-in duration-700 pb-20">
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-slate-900/50 p-8 rounded-[2.5rem] shadow-sm backdrop-blur-md border border-slate-800">
-                <div className="flex items-center gap-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-slate-900/50 p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] shadow-sm backdrop-blur-md border border-slate-800">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
                     <div className="w-16 h-16 bg-gradient-to-tr from-amber-500 to-orange-500 rounded-3xl flex items-center justify-center text-white shadow-lg shadow-amber-500/20">
                         <Crown className="w-8 h-8" />
                     </div>
@@ -37,7 +37,7 @@ export default async function SuperAdminPage() {
                         </p>
                     </div>
                 </div>
-                <div>
+                <div className="w-full md:w-auto">
                     <CreateStoreModal />
                 </div>
             </div>
@@ -74,37 +74,37 @@ export default async function SuperAdminPage() {
             </div>
 
             {/* Table */}
-            <div className="bg-slate-900/50 rounded-[2rem] border border-slate-800 overflow-hidden">
-                <div className="p-6 border-b border-slate-800">
+            <div className="bg-slate-900/50 rounded-2xl md:rounded-[2rem] border border-slate-800 overflow-hidden w-full max-w-full">
+                <div className="p-4 md:p-6 border-b border-slate-800">
                     <h2 className="text-lg font-black text-white">Todas as Lojas</h2>
                 </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                <div className="overflow-x-auto w-full">
+                    <table className="w-full text-left border-collapse whitespace-nowrap md:whitespace-normal">
                         <thead>
                             <tr className="bg-slate-900/80 text-slate-400 text-xs font-black uppercase tracking-widest">
-                                <th className="p-6 py-4">Loja</th>
-                                <th className="p-6 py-4">Dono</th>
-                                <th className="p-6 py-4">Status</th>
-                                <th className="p-6 py-4">Fim do Teste</th>
-                                <th className="p-6 py-4 w-16"></th>
+                                <th className="p-4 md:p-6 py-4">Loja</th>
+                                <th className="p-4 md:p-6 py-4">Dono</th>
+                                <th className="p-4 md:p-6 py-4">Status</th>
+                                <th className="p-4 md:p-6 py-4">Fim do Teste</th>
+                                <th className="p-4 md:p-6 py-4 w-16"></th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-800/50">
                             {stores.map((store) => {
                                 const isExpired = store.trial_ends_at && isPast(store.trial_ends_at)
-                                const owner = store.users[0]
+                                const owner = store.users.find(u => u.role === 'USER') || store.users[0]
 
                                 return (
                                     <tr key={store.id} className="hover:bg-slate-800/30 transition-colors">
-                                        <td className="p-6 py-4">
+                                        <td className="p-4 md:p-6 py-4">
                                             <p className="font-bold text-slate-200">{store.name}</p>
                                             <p className="text-xs text-slate-500">{store.niche}</p>
                                         </td>
-                                        <td className="p-6 py-4">
+                                        <td className="p-4 md:p-6 py-4">
                                             <p className="font-bold text-slate-300">{owner?.name || '-'}</p>
                                             <p className="text-xs text-slate-500">{owner?.email || '-'}</p>
                                         </td>
-                                        <td className="p-6 py-4">
+                                        <td className="p-4 md:p-6 py-4">
                                             <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${store.status === 'ACTIVE' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
                                                 store.status === 'TRIAL' && !isExpired ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
                                                     'bg-red-500/10 text-red-400 border border-red-500/20'
@@ -112,7 +112,7 @@ export default async function SuperAdminPage() {
                                                 {store.status === 'TRIAL' && isExpired ? 'EXPIRADO' : store.status}
                                             </span>
                                         </td>
-                                        <td className="p-6 py-4">
+                                        <td className="p-4 md:p-6 py-4">
                                             {store.trial_ends_at ? (
                                                 <div className="text-sm border-l-2 border-slate-700 pl-3">
                                                     <p className={`font-bold ${isExpired ? 'text-red-400' : 'text-amber-400'}`}>
@@ -126,7 +126,7 @@ export default async function SuperAdminPage() {
                                                 <span className="text-slate-500">-</span>
                                             )}
                                         </td>
-                                        <td className="p-4 py-4 text-right">
+                                        <td className="p-2 md:p-4 py-4 text-right">
                                             <StoreActionsMenu store={store} />
                                         </td>
                                     </tr>

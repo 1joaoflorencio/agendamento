@@ -26,8 +26,8 @@ export default function DeleteAttendantButton({ id, name, className, iconSize = 
         startTransition(async () => {
             try {
                 await deleteAttendant(formData)
-            } catch (error: any) {
-                alert(error.message || 'Erro ao excluir profissional.')
+            } catch (error) {
+                alert((error as Error).message || 'Erro ao excluir profissional.')
             }
         })
     }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { MoreVertical, Edit2, Trash2, Loader2, AlertTriangle } from 'lucide-react'
+import { MoreVertical, Edit2, Trash2, Loader2, AlertTriangle, Eye, Key } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -11,12 +11,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { updateStore, deleteStore } from '@/app/actions/super-admin'
 
 interface StoreActionsProps {
-    store: any // simplified for this component
+    store: {
+        id: string;
+        name: string;
+        slug: string;
+        status: string;
+        niche: string;
+        trial_ends_at: string | Date | null;
+        initial_password?: string | null;
+        users: { email: string }[];
+    }
 }
 
 export function StoreActionsMenu({ store }: StoreActionsProps) {
     const [isEditOpen, setIsEditOpen] = useState(false)
     const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+    const [isViewOpen, setIsViewOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
 
     async function handleEdit(e: React.FormEvent<HTMLFormElement>) {
@@ -75,6 +85,15 @@ export function StoreActionsMenu({ store }: StoreActionsProps) {
                         <Edit2 className="h-4 w-4" />
                         Editar Loja
                     </DropdownMenuItem>
+                    {store.initial_password && (
+                        <DropdownMenuItem
+                            onClick={() => setIsViewOpen(true)}
+                            className="hover:bg-slate-800 hover:text-white cursor-pointer rounded-xl gap-2 font-bold focus:bg-slate-800 focus:text-white"
+                        >
+                            <Eye className="h-4 w-4" />
+                            Ver Credenciais
+                        </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem
                         onClick={() => setIsDeleteOpen(true)}
                         className="text-red-400 hover:bg-red-500/10 hover:text-red-400 cursor-pointer rounded-xl gap-2 font-bold focus:bg-red-500/10 focus:text-red-400"
@@ -170,6 +189,35 @@ export function StoreActionsMenu({ store }: StoreActionsProps) {
                                 {isLoading ? <Loader2 className="w-6 h-6 animate-spin mx-auto" /> : 'Sim, Excluir Para Sempre'}
                             </Button>
                         </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* View Credentials Modal */}
+            <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
+                <DialogContent className="sm:max-w-[425px] bg-slate-900 border-slate-800 text-slate-50 rounded-3xl p-6">
+                    <DialogHeader className="mb-4">
+                        <div className="w-16 h-16 bg-indigo-500/10 text-indigo-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Key className="w-8 h-8" />
+                        </div>
+                        <DialogTitle className="text-xl font-black text-white text-center">Credenciais de Acesso</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <Label className="text-sm font-bold text-slate-400">E-mail de Acesso</Label>
+                            <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 text-white font-medium select-all">
+                                {store.users?.[0]?.email || 'Não encontrado'}
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-sm font-bold text-slate-400">Senha Padrão</Label>
+                            <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 text-white font-medium select-all">
+                                {store.initial_password}
+                            </div>
+                        </div>
+                        <Button type="button" variant="ghost" onClick={() => setIsViewOpen(false)} className="w-full text-slate-400 hover:text-white hover:bg-slate-800 h-12 rounded-xl mt-2 font-bold">
+                            Fechar
+                        </Button>
                     </div>
                 </DialogContent>
             </Dialog>

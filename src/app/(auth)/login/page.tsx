@@ -1,16 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useActionState } from 'react'
 import { login } from '../actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card'
 import Link from 'next/link'
-import { CalendarDays, Eye, EyeOff } from 'lucide-react'
+import { CalendarDays, Eye, EyeOff, AlertCircle } from 'lucide-react'
 
 export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false)
+    const [state, formAction, isPending] = useActionState(login, null)
 
     return (
         <div className="min-h-screen w-full flex items-center justify-center bg-slate-50 relative overflow-hidden selection:bg-indigo-500/30">
@@ -36,8 +37,14 @@ export default function LoginPage() {
                 </div>
 
                 <Card className="border-none shadow-2xl shadow-slate-200/50 bg-white/70 backdrop-blur-xl rounded-[2.5rem] overflow-hidden">
-                    <form>
+                    <form action={formAction}>
                         <CardContent className="p-8 space-y-6">
+                            {state?.error && (
+                                <div className="p-4 bg-red-50 text-red-600 rounded-2xl text-sm font-medium border border-red-100 flex items-center gap-2">
+                                    <AlertCircle className="w-5 h-5 shrink-0" />
+                                    <span>{state.error}</span>
+                                </div>
+                            )}
                             <div className="space-y-2">
                                 <Label htmlFor="email" className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">
                                     Email
@@ -77,8 +84,11 @@ export default function LoginPage() {
                                 </div>
                             </div>
 
-                            <Button className="w-full h-14 rounded-2xl bg-slate-900 hover:bg-black text-white font-black text-lg transition-all shadow-xl shadow-slate-900/10 hover:-translate-y-1 mt-4" formAction={login}>
-                                Entrar
+                            <Button
+                                className="w-full h-14 rounded-2xl bg-slate-900 hover:bg-black text-white font-black text-lg transition-all shadow-xl shadow-slate-900/10 hover:-translate-y-1 mt-4 disabled:opacity-50 disabled:hover:translate-y-0"
+                                disabled={isPending}
+                            >
+                                {isPending ? 'Entrando...' : 'Entrar'}
                             </Button>
                         </CardContent>
                     </form>

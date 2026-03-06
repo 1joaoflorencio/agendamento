@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import prisma from '@/lib/prisma'
 import { getTheme } from '@/lib/niche-themes'
 import { Button } from '@/components/ui/button'
-import { Trash2, User, Mail, Phone, ShieldCheck, Users, CalendarDays } from 'lucide-react'
+import { User, Mail, Phone, ShieldCheck, Users, CalendarDays } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { Attendant } from '@prisma/client'
@@ -18,7 +18,7 @@ export default async function TeamPage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) redirect('/login')
 
-    const appUser: any = await prisma.user.findUnique({
+    const appUser = await prisma.user.findUnique({
         where: { id: user.id },
         include: { establishment: true }
     })

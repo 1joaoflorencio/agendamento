@@ -40,8 +40,8 @@ export default function AddServiceDialog({ attendants, placeholders: ph }: AddSe
                     setSuccess(false)
                     setSelectedAttendants([])
                 }, 1500)
-            } catch (error: any) {
-                alert(error.message || 'Erro ao criar serviço.')
+            } catch (error) {
+                alert((error as Error).message || 'Erro ao criar serviço.')
             }
         })
     }

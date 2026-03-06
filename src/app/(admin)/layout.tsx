@@ -16,11 +16,13 @@ export default function AdminLayout({
     children: React.ReactNode
 }) {
     const pathname = usePathname()
-    const [establishment, setEstablishment] = useState<any>(null)
+    const [establishment, setEstablishment] = useState<Establishment | null>(null)
     const [isLoading, setIsLoading] = useState(true)
+    const [isMounted, setIsMounted] = useState(false)
     const supabase = createClient()
 
     useEffect(() => {
+        setIsMounted(true)
         const checkUser = async () => {
             setIsLoading(true)
             const { data: { user } } = await supabase.auth.getUser()
@@ -138,39 +140,41 @@ export default function AdminLayout({
                 {/* Header Dinâmico */}
                 <header className="h-16 sm:h-20 flex items-center justify-between px-4 sm:px-8 sticky top-0 bg-white/40 backdrop-blur-md border-b border-slate-200/50 z-20">
                     <div className="lg:hidden">
-                        <Sheet>
-                            <SheetTrigger asChild>
-                                <Button variant="outline" size="icon" className="rounded-full border-slate-200 shadow-sm w-12 h-12">
-                                    <Menu className="h-5 w-5 text-slate-600" />
-                                </Button>
-                            </SheetTrigger>
-                            <SheetContent side="left" className="w-[300px] border-none bg-white p-0">
-                                <SheetTitle className="sr-only">Menu Mobile</SheetTitle>
-                                <div className="p-8">
-                                    <Link href="/dashboard" className="flex items-center gap-3 mb-10">
-                                        <div className="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white">
-                                            <CalendarDays className="h-6 w-6" />
+                        {isMounted && (
+                            <Sheet>
+                                <SheetTrigger asChild>
+                                    <Button variant="outline" size="icon" className="rounded-full border-slate-200 shadow-sm w-12 h-12">
+                                        <Menu className="h-5 w-5 text-slate-600" />
+                                    </Button>
+                                </SheetTrigger>
+                                <SheetContent side="left" className="w-[300px] border-none bg-white p-0">
+                                    <SheetTitle className="sr-only">Menu Mobile</SheetTitle>
+                                    <div className="p-8">
+                                        <Link href="/dashboard" className="flex items-center gap-3 mb-10">
+                                            <div className="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white">
+                                                <CalendarDays className="h-6 w-6" />
+                                            </div>
+                                            <span className="font-extrabold text-xl">Admin</span>
+                                        </Link>
+                                        <div className="space-y-4">
+                                            {navLinks.map((link) => (
+                                                <Link
+                                                    key={link.href}
+                                                    href={link.href}
+                                                    className={cn(
+                                                        "flex items-center gap-3 p-4 rounded-3xl font-bold transition-all",
+                                                        pathname === link.href ? "bg-indigo-600 text-white" : "text-slate-500"
+                                                    )}
+                                                >
+                                                    <link.icon className="h-5 w-5" />
+                                                    {link.name}
+                                                </Link>
+                                            ))}
                                         </div>
-                                        <span className="font-extrabold text-xl">Admin</span>
-                                    </Link>
-                                    <div className="space-y-4">
-                                        {navLinks.map((link) => (
-                                            <Link
-                                                key={link.href}
-                                                href={link.href}
-                                                className={cn(
-                                                    "flex items-center gap-3 p-4 rounded-3xl font-bold transition-all",
-                                                    pathname === link.href ? "bg-indigo-600 text-white" : "text-slate-500"
-                                                )}
-                                            >
-                                                <link.icon className="h-5 w-5" />
-                                                {link.name}
-                                            </Link>
-                                        ))}
                                     </div>
-                                </div>
-                            </SheetContent>
-                        </Sheet>
+                                </SheetContent>
+                            </Sheet>
+                        )}
                     </div>
 
                     <div className="hidden lg:flex items-center gap-2">

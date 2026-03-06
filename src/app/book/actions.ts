@@ -5,6 +5,23 @@ import { startOfDay, endOfDay, addMinutes, format, isBefore, isAfter } from 'dat
 import { ptBR } from 'date-fns/locale'
 import { sendWhatsAppMessage } from '@/lib/whatsapp'
 
+// Simple in-memory rate limiter (resets on server restart)
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
+const RATE_LIMIT_MAX = 5    // max requests
+const RATE_LIMIT_WINDOW = 60_000 // per minute
+
+function checkRateLimit(key: string): boolean {
+    const now = Date.now()
+    const entry = rateLimitMap.get(key)
+    if (!entry || now > entry.resetAt) {
+        rateLimitMap.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW })
+        return true
+    }
+    if (entry.count >= RATE_LIMIT_MAX) return false
+    entry.count++
+    return true
+}
+
 // 1. Get Establishment Details for the booking page
 export async function getEstablishmentForBooking(slug: string) {
     const establishment = await prisma.establishment.findUnique({
@@ -98,7 +115,7 @@ export async function getAvailableTimeSlots(
 
     // Mapeia os intervalos de tempo ocupados
     const blockedIntervals = await Promise.all(
-        existingAppointments.map(async (appt: any) => {
+        existingAppointments.map(async (appt) => {
             const apptService = await prisma.service.findUnique({ where: { id: appt.service_id } });
             const apptDuration = apptService ? apptService.duration_minutes : 60; // fallback
 
@@ -162,6 +179,12 @@ export async function createPublicAppointment(formData: FormData) {
         throw new Error("Preencha todos os campos obrigatórios")
     }
 
+    // Rate limiting by phone number
+    const cleanPhone = client_phone.replace(/\D/g, '')
+    if (!checkRateLimit(cleanPhone)) {
+        throw new Error("Muitas tentativas. Aguarde um momento antes de tentar novamente.")
+    }
+
     const [hours, minutes] = timeStr.split(":").map(Number)
     // Forçamos o timezone local
     const dateTime = new Date(`${dateStr}T00:00:00`)
@@ -191,10 +214,14 @@ export async function createPublicAppointment(formData: FormData) {
         }
     })
 
-    // Envio de WhatsApp (Fase 5 - Debug)
-    const result = await sendWhatsAppMessage(tenant_id, client_phone, `Olá ${client_name}! Confirmamos seu agendamento de ${appointment.service.name} com ${appointment.attendant.name} para o dia ${format(dateTime, "dd/MM 'às' HH:mm", { locale: ptBR })}. Te esperamos!`)
+    // Envio de WhatsApp (non-blocking: falha no WhatsApp NÃO impede o agendamento)
+    try {
+        const result = await sendWhatsAppMessage(tenant_id, client_phone, `Olá ${client_name}! Confirmamos seu agendamento de ${appointment.service.name} com ${appointment.attendant.name} para o dia ${format(dateTime, "dd/MM 'às' HH:mm", { locale: ptBR })}. Te esperamos!`)
 
-    if (!result.success) {
-        throw new Error(`WhatsApp não enviado: ${JSON.stringify(result.data || result.reason)}`)
+        if (!result.success) {
+            console.warn(`[WhatsApp] Falha ao enviar confirmação (não-bloqueante):`, result.reason || result.data)
+        }
+    } catch (whatsappError) {
+        console.warn('[WhatsApp] Erro inesperado ao enviar confirmação (não-bloqueante):', whatsappError)
     }
 }

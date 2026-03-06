@@ -27,8 +27,8 @@ export default function AddAttendantDialog({ placeholders: ph }: AddAttendantDia
                     setOpen(false)
                     setSuccess(false)
                 }, 1500)
-            } catch (error: any) {
-                alert(error.message || 'Erro ao cadastrar profissional.')
+            } catch (error) {
+                alert((error as Error).message || 'Erro ao cadastrar profissional.')
             }
         })
     }

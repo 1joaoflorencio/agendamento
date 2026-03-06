@@ -1,32 +1,19 @@
 'use client'
 
-import { useState, useMemo, useTransition } from 'react'
+import { useState, useMemo, useTransition, useRef, useCallback } from 'react'
 import { Calendar, User, Phone as PhoneIcon, CheckCircle2, XCircle, Clock, ChevronDown, DollarSign, Users, PhoneCall, MessageCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { format, addDays, subDays, isSameDay, isBefore, startOfDay } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { updateAppointmentStatus } from './actions'
-
-type Appointment = {
-    id: string
-    date_time: Date
-    status: string
-    client_name: string
-    client_phone: string
-    client_email?: string | null
-    service: { name: string; price: number; duration_minutes: number }
-    attendant: { name: string; id: string }
-}
-
-type AttendantOption = {
-    id: string
-    name: string
-}
+import { useDragScroll } from '@/hooks/useDragScroll'
+import type { Appointment, Attendant } from '@/types'
 
 type AgendaViewProps = {
     appointments: Appointment[]
-    attendants: AttendantOption[]
+    attendants: Pick<Attendant, 'id' | 'name'>[]
+    initialDate: string
     theme: {
         textPrimary: string
         bgMuted: string
@@ -35,14 +22,17 @@ type AgendaViewProps = {
     }
 }
 
-export default function AgendaView({ appointments, attendants, theme }: AgendaViewProps) {
-    // Use startOfDay to create a stable date (no time component = no SSR mismatch)
-    const today = startOfDay(new Date())
+export default function AgendaView({ appointments, attendants, initialDate, theme }: AgendaViewProps) {
+    // Use the server-provided date to avoid hydration mismatch
+    const today = startOfDay(new Date(initialDate))
     const [selectedDate, setSelectedDate] = useState<Date>(today)
     const [selectedAttendant, setSelectedAttendant] = useState<string | null>(null)
     const [expandedId, setExpandedId] = useState<string | null>(null)
     const [isPending, startTransition] = useTransition()
     const [pendingAction, setPendingAction] = useState<string | null>(null)
+
+    const dateSwiperDrag = useDragScroll()
+    const attendantDrag = useDragScroll()
 
     const allDays = useMemo(() => {
         const days = []
@@ -51,7 +41,7 @@ export default function AgendaView({ appointments, attendants, theme }: AgendaVi
             days.push(addDays(today, i))
         }
         return days
-    }, [])
+    }, [today])
 
     const isPastDate = isBefore(selectedDate, today)
 
@@ -126,16 +116,30 @@ export default function AgendaView({ appointments, attendants, theme }: AgendaVi
             )}
 
             {/* Date Swiper */}
-            <div className="flex gap-2.5 overflow-x-auto pb-3 pt-1 snap-x snap-mandatory scrollbar-hide" id="date-swiper" ref={(el) => {
-                // Auto-scroll to today on mount
-                if (el && !el.dataset.scrolled) {
-                    const todayBtn = el.querySelector('[data-today="true"]')
-                    if (todayBtn) {
-                        todayBtn.scrollIntoView({ inline: 'center', block: 'nearest' })
-                        el.dataset.scrolled = 'true'
+            <div
+                className="flex gap-2.5 overflow-x-auto pb-3 pt-1 snap-x snap-mandatory scrollbar-hide"
+                id="date-swiper"
+                style={{ cursor: 'grab' }}
+                ref={(el) => {
+                    if (!el) return
+                    // Type casting bypass for next.js immutability warnings
+                    const swiperRef = dateSwiperDrag.scrollRef as unknown as { current: HTMLDivElement | null }
+                    swiperRef.current = el
+
+                    // Auto-scroll to today on mount
+                    if (!el.dataset.scrolled) {
+                        const todayBtn = el.querySelector('[data-today="true"]')
+                        if (todayBtn) {
+                            todayBtn.scrollIntoView({ inline: 'center', block: 'nearest' })
+                            el.dataset.scrolled = 'true'
+                        }
                     }
-                }
-            }}>
+                }}
+                onMouseDown={dateSwiperDrag.events.onMouseDown}
+                onMouseLeave={dateSwiperDrag.events.onMouseLeave}
+                onMouseUp={dateSwiperDrag.events.onMouseUp}
+                onMouseMove={dateSwiperDrag.events.onMouseMove}
+            >
                 {allDays.map((date, idx) => {
                     const isSelected = isSameDay(date, selectedDate)
                     const isToday = isSameDay(date, today)
@@ -146,7 +150,10 @@ export default function AgendaView({ appointments, attendants, theme }: AgendaVi
                         <button
                             key={idx}
                             data-today={isToday ? 'true' : undefined}
-                            onClick={() => setSelectedDate(date)}
+                            onClick={() => {
+                                if (dateSwiperDrag.hasDragged()) return
+                                setSelectedDate(date)
+                            }}
                             className={cn(
                                 "relative flex flex-col items-center justify-center min-w-[4rem] h-[4.5rem] rounded-2xl snap-center transition-all border",
                                 isSelected
@@ -178,7 +185,14 @@ export default function AgendaView({ appointments, attendants, theme }: AgendaVi
 
             {/* Filtro por Profissional */}
             {attendants.length > 0 && (
-                <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+                <div
+                    className="flex gap-2 overflow-x-auto scrollbar-hide pb-1"
+                    style={{ cursor: 'grab' }}
+                    onMouseDown={attendantDrag.events.onMouseDown}
+                    onMouseLeave={attendantDrag.events.onMouseLeave}
+                    onMouseUp={attendantDrag.events.onMouseUp}
+                    onMouseMove={attendantDrag.events.onMouseMove}
+                >
                     <button
                         onClick={() => setSelectedAttendant(null)}
                         className={cn(
@@ -255,11 +269,11 @@ export default function AgendaView({ appointments, attendants, theme }: AgendaVi
                                 {/* Linha principal - clicável */}
                                 <button
                                     onClick={() => setExpandedId(isExpanded ? null : appt.id)}
-                                    className="w-full p-4 flex items-center gap-3 text-left"
+                                    className="w-full p-3 sm:p-4 flex items-center gap-2 sm:gap-3 text-left"
                                 >
                                     {/* Horário */}
-                                    <div className="bg-slate-50 rounded-xl px-2.5 py-1.5 flex-shrink-0">
-                                        <span className="text-base font-black text-slate-700 leading-none">
+                                    <div className="bg-slate-50 rounded-xl px-2 py-1.5 flex-shrink-0">
+                                        <span className="text-sm sm:text-base font-black text-slate-700 leading-none">
                                             {format(new Date(appt.date_time), 'HH:mm')}
                                         </span>
                                     </div>
@@ -267,9 +281,8 @@ export default function AgendaView({ appointments, attendants, theme }: AgendaVi
                                     {/* Nome + Serviço + Profissional */}
                                     <div className="flex-1 min-w-0">
                                         <h4 className="font-black text-slate-800 truncate text-sm">{appt.client_name}</h4>
-                                        <p className="text-xs text-slate-400 font-medium truncate">
-                                            {appt.service.name} · <span className="text-indigo-400">{appt.attendant.name.split(' ')[0]}</span>
-                                        </p>
+                                        <p className="text-xs text-slate-400 font-medium truncate">{appt.service.name}</p>
+                                        <p className="text-[11px] text-indigo-400 font-semibold truncate">{appt.attendant.name}</p>
                                     </div>
 
                                     {/* Status badge */}

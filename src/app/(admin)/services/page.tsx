@@ -18,7 +18,7 @@ export default async function ServicesPage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) redirect('/login')
 
-    const appUser: any = await prisma.user.findUnique({
+    const appUser = await prisma.user.findUnique({
         where: { id: user.id },
         include: { establishment: true }
     })
