@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import prisma from '@/lib/prisma'
 
-export async function login(prevState: any, formData: FormData) {
+export async function login(prevState: unknown, formData: FormData) {
     const supabase = await createClient()
 
     const email = (formData.get('email') as string || '').trim()
@@ -31,20 +31,18 @@ export async function login(prevState: any, formData: FormData) {
         return { error: error.message === 'Invalid login credentials' ? 'Email ou senha incorretos.' : error.message }
     }
 
+    let dbUser = null
     if (authData?.user) {
-        const dbUser = await prisma.user.findUnique({
+        dbUser = await prisma.user.findUnique({
             where: { id: authData.user.id }
         })
-
-        revalidatePath('/', 'layout')
-
-        if (dbUser?.role === 'SUPER_ADMIN') {
-            redirect('/super-admin')
-        }
     }
 
     revalidatePath('/', 'layout')
+
+    if (dbUser?.role === 'SUPER_ADMIN') {
+        redirect('/super-admin')
+    }
+
     redirect('/dashboard')
 }
-
-

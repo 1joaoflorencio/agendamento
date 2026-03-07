@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useMemo, useTransition, useRef, useCallback } from 'react'
-import { Calendar, User, Phone as PhoneIcon, CheckCircle2, XCircle, Clock, ChevronDown, DollarSign, Users, PhoneCall, MessageCircle } from 'lucide-react'
+import { useState, useTransition, useMemo } from 'react'
+import { Calendar, CheckCircle2, XCircle, Clock, ChevronDown, MessageCircle, Users, PhoneCall } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { format, addDays, subDays, isSameDay, isBefore, startOfDay } from 'date-fns'
+import { isSameDay, format, startOfDay, addDays, isBefore } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { updateAppointmentStatus } from './actions'
 import { useDragScroll } from '@/hooks/useDragScroll'
@@ -28,7 +28,7 @@ export default function AgendaView({ appointments, attendants, initialDate, them
     const [selectedDate, setSelectedDate] = useState<Date>(today)
     const [selectedAttendant, setSelectedAttendant] = useState<string | null>(null)
     const [expandedId, setExpandedId] = useState<string | null>(null)
-    const [isPending, startTransition] = useTransition()
+    const [, startTransition] = useTransition()
     const [pendingAction, setPendingAction] = useState<string | null>(null)
 
     const dateSwiperDrag = useDragScroll()

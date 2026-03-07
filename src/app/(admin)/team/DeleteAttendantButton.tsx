@@ -4,6 +4,7 @@ import { useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { deleteAttendant } from './actions'
 import { Trash2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface DeleteAttendantButtonProps {
     id: string
@@ -26,8 +27,9 @@ export default function DeleteAttendantButton({ id, name, className, iconSize = 
         startTransition(async () => {
             try {
                 await deleteAttendant(formData)
+                toast.success('Profissional excluído.')
             } catch (error) {
-                alert((error as Error).message || 'Erro ao excluir profissional.')
+                toast.error((error as Error).message || 'Erro ao excluir profissional.')
             }
         })
     }

@@ -25,6 +25,8 @@ model Establishment {
   status          String   @default("TRIAL") // TRIAL, ACTIVE, EXPIRED
   trial_ends_at   DateTime?
   initial_password String?
+  pause_start     DateTime? // A partir de qual horário a pausa agendada começa
+  paused_until    DateTime? // Até qual horário/dia a loja não recebe novos agendamentos
 
   whatsapp_api_url      String?
   whatsapp_instance_name String?
@@ -34,6 +36,7 @@ model Establishment {
   users       User[]
   attendants  Attendant[]
   services    Service[]
+  clients     Client[]
   appointments Appointment[]
   businessHours BusinessHour[]
 }
@@ -67,6 +70,8 @@ model Attendant {
   name            String
   email           String?
   phone           String?
+  pause_start     DateTime? // Pausa específica desse profissional
+  paused_until    DateTime? // Até quando o profissional está pausado
   created_at      DateTime @default(now())
 
   establishment   Establishment @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
@@ -106,6 +111,7 @@ model Appointment {
   client_email    String?
   service_id      String
   attendant_id    String
+  client_id       String?  // Relacionamento com a nova tabela Client
   date_time       DateTime
   status          String   @default("SCHEDULED") // SCHEDULED, CANCELED, COMPLETED
   created_at      DateTime @default(now())
@@ -113,8 +119,26 @@ model Appointment {
   establishment   Establishment @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
   service         Service       @relation(fields: [service_id], references: [id], onDelete: Cascade)
   attendant       Attendant     @relation(fields: [attendant_id], references: [id], onDelete: Cascade)
+  client_profile  Client?       @relation(fields: [client_id], references: [id], onDelete: SetNull)
 
   @@index([tenant_id, date_time])
   @@index([attendant_id, date_time])
   @@index([tenant_id, attendant_id, status])
+}
+
+model Client {
+  id              String   @id @default(uuid())
+  tenant_id       String
+  name            String
+  phone           String
+  email           String?
+  notes           String?  @db.Text
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  establishment   Establishment @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  appointments    Appointment[]
+
+  @@unique([tenant_id, phone]) // Um número de telefone só pode ter 1 perfil por loja
+  @@index([tenant_id, name])
 }

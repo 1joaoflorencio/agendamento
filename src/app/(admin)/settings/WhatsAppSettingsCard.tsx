@@ -10,6 +10,7 @@ import { MessageSquare, ShieldCheck, Zap, Globe, Key, AlertCircle, CheckCircle2 
 import { cn } from '@/lib/utils'
 import { Switch } from '@/components/ui/switch'
 import type { Establishment } from '@/types'
+import { toast } from 'sonner'
 
 export default function WhatsAppSettingsCard({ establishment }: { establishment: Pick<Establishment, 'whatsapp_enabled' | 'whatsapp_api_url' | 'whatsapp_instance_name' | 'whatsapp_api_key'> }) {
     const [isPending, startTransition] = useTransition()
@@ -30,9 +31,9 @@ export default function WhatsAppSettingsCard({ establishment }: { establishment:
         startTransition(async () => {
             try {
                 await updateWhatsAppSettings(formData)
-                alert('Configurações de integração salvas!')
+                toast.success('Configurações de integração salvas!')
             } catch (error) {
-                alert((error as Error).message)
+                toast.error((error as Error).message)
             }
         })
     }

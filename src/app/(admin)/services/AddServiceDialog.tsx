@@ -9,6 +9,7 @@ import { createService } from './actions'
 import { Plus, CheckCircle2, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { NichePlaceholders } from '@/lib/niche-themes'
+import { toast } from 'sonner'
 
 interface AddServiceDialogProps {
     attendants: { id: string; name: string }[]
@@ -35,13 +36,14 @@ export default function AddServiceDialog({ attendants, placeholders: ph }: AddSe
             try {
                 await createService(formData)
                 setSuccess(true)
+                toast.success('Serviço criado com sucesso!')
                 setTimeout(() => {
                     setOpen(false)
                     setSuccess(false)
                     setSelectedAttendants([])
                 }, 1500)
             } catch (error) {
-                alert((error as Error).message || 'Erro ao criar serviço.')
+                toast.error((error as Error).message || 'Erro ao criar serviço.')
             }
         })
     }

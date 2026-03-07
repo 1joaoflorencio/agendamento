@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Building2, Globe, Copy, CheckCircle2, Save, Edit2, X, Loader2, Lock } from 'lucide-react'
 import { updateEstablishmentProfile, updateEstablishmentSlug } from './actions'
 import { Establishment } from '@prisma/client'
+import { toast } from 'sonner'
 
 interface EstablishmentProfileCardProps {
     establishment: Establishment
@@ -24,9 +25,10 @@ export default function EstablishmentProfileCard({ establishment }: Establishmen
         setIsLoading(true)
         try {
             await updateEstablishmentProfile(formData)
+            toast.success('Perfil atualizado com sucesso!')
         } catch (error) {
             console.error(error)
-            alert('Erro ao atualizar perfil')
+            toast.error('Erro ao atualizar perfil')
         } finally {
             setIsLoading(false)
         }
@@ -39,8 +41,11 @@ export default function EstablishmentProfileCard({ establishment }: Establishmen
         try {
             await updateEstablishmentSlug(slugInput)
             setIsEditingSlug(false)
+            toast.success('Link atualizado com sucesso!')
         } catch (error) {
-            setSlugError((error as Error).message)
+            const mg = (error as Error).message
+            setSlugError(mg)
+            toast.error(mg)
         } finally {
             setIsSavingSlug(false)
         }

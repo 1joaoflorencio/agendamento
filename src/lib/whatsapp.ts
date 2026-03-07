@@ -1,10 +1,5 @@
 import prisma from '@/lib/prisma'
 
-interface EvolutionApiConfig {
-    instanceName: string;
-    apiKey: string;
-}
-
 export async function sendWhatsAppMessage(tenantId: string, phone: string, text: string) {
     const establishment = await prisma.establishment.findUnique({
         where: { id: tenantId },

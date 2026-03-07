@@ -58,6 +58,18 @@ export async function getAvailableTimeSlots(
     // Forçamos o timezone exato da string para não cair no dia anterior em UTC -3
     const date = new Date(`${dateStr}T00:00:00`);
 
+    // Busca estabelecimento para checar se a loja está pausada
+    const establishment = await prisma.establishment.findUnique({
+        where: { id: tenantId },
+        select: { pause_start: true, paused_until: true }
+    });
+
+    // Busca o profissional para checar se ELE está pausado especificamente
+    const attendant = await prisma.attendant.findUnique({
+        where: { id: attendantId },
+        select: { pause_start: true, paused_until: true }
+    });
+
     // 2.2 Busca horários de funcionamento dinâmicos
     const dayOfWeek = date.getDay(); // 0 = Domingo, 1 = Segunda...
     const businessHour = await prisma.businessHour.findUnique({
@@ -148,6 +160,30 @@ export async function getAvailableTimeSlots(
             continue;
         }
 
+        // Bloquear horário se a loja estiver em "Pausa Agendada" naquele momento
+        const isStorePaused = establishment?.pause_start && establishment?.paused_until && (
+            (slotStart >= establishment.pause_start && slotStart < establishment.paused_until) ||
+            (slotEnd > establishment.pause_start && slotEnd <= establishment.paused_until) ||
+            (slotStart <= establishment.pause_start && slotEnd >= establishment.paused_until)
+        );
+
+        // Bloquear horário se o profissional estiver em "Pausa Agendada" naquele momento
+        const isAttendantPaused = attendant?.pause_start && attendant?.paused_until && (
+            (slotStart >= attendant.pause_start && slotStart < attendant.paused_until) ||
+            (slotEnd > attendant.pause_start && slotEnd <= attendant.paused_until) ||
+            (slotStart <= attendant.pause_start && slotEnd >= attendant.paused_until)
+        );
+
+        // Lógica Legada de Pausa Imediata
+        const isLegacyStorePaused = establishment?.paused_until && isBefore(slotStart, establishment.paused_until);
+        const isLegacyAttendantPaused = attendant?.paused_until && isBefore(slotStart, attendant.paused_until);
+
+        if (isStorePaused || isAttendantPaused || isLegacyStorePaused || isLegacyAttendantPaused) {
+            allSlots.push({ time: timeStr, available: false });
+            currentSlot = addMinutes(currentSlot, INCREMENT);
+            continue;
+        }
+
         let isOverlapping = false;
         for (const interval of blockedIntervals) {
             if (isBefore(slotStart, interval.end) && isAfter(slotEnd, interval.start)) {
@@ -197,11 +233,33 @@ export async function createPublicAppointment(formData: FormData) {
         throw new Error("Ops! Este horário já foi reservado ou ficou indisponível no sistema.");
     }
 
+    // CRM: Buscar ou Criar o Perfil do Cliente baseado no Telefone Limpo
+    // Adicionamos a lógica de Upsert para garantir a criação ou atualização.
+    const clientProfile = await prisma.client.upsert({
+        where: {
+            tenant_id_phone: {
+                tenant_id: tenant_id,
+                phone: cleanPhone
+            }
+        },
+        update: {
+            name: client_name,         // Atualiza o nome caso a pessoa tenha digitado algo diferente 
+            email: client_email || null
+        },
+        create: {
+            tenant_id,
+            name: client_name,
+            phone: cleanPhone,
+            email: client_email || null,
+        }
+    })
+
     const appointment = await prisma.appointment.create({
         data: {
             tenant_id,
             attendant_id,
             service_id,
+            client_id: clientProfile.id,
             client_name,
             client_phone,
             client_email: client_email || null,

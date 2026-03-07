@@ -12,7 +12,8 @@ export async function POST(req: Request) {
             }
         }
 
-        const body = await req.json()
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const _body = await req.json()
 
         console.log('[WhatsApp Webhook Received]')
 

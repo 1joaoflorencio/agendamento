@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { updateService } from './actions'
 import { Service } from '@prisma/client'
-import { Edit2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface EditServiceDialogProps {
     service: Service
@@ -21,10 +21,11 @@ export default function EditServiceDialog({ service }: EditServiceDialogProps) {
         setIsLoading(true)
         try {
             await updateService(formData)
+            toast.success('Serviço atualizado com sucesso!')
             setOpen(false)
         } catch (error) {
             console.error(error)
-            alert('Erro ao atualizar serviço')
+            toast.error('Erro ao atualizar serviço')
         } finally {
             setIsLoading(false)
         }

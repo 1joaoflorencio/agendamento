@@ -4,6 +4,8 @@ import { createClient } from '@supabase/supabase-js'
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 
+import { createClient as createServerClientRaw } from '@/utils/supabase/server'
+
 // Note: Requires SUPABASE_SERVICE_ROLE_KEY to be set in .env
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -16,6 +18,28 @@ const supabaseAdmin = createClient(
     }
 )
 
+/**
+ * Ensures the caller is a SUPER_ADMIN.
+ * If not, throws an Error.
+ */
+async function verifySuperAdmin() {
+    const supabaseSession = await createServerClientRaw()
+    const { data: { user } } = await supabaseSession.auth.getUser()
+
+    if (!user) throw new Error("Acesso negado: Usuário não autenticado.")
+
+    const dbUser = await prisma.user.findUnique({
+        where: { id: user.id },
+        select: { role: true }
+    })
+
+    if (!dbUser || dbUser.role !== 'SUPER_ADMIN') {
+        throw new Error("Acesso negado: Privilégios insuficientes.")
+    }
+
+    return true
+}
+
 export async function createTrialStore(data: {
     storeName: string,
     ownerName: string,
@@ -23,6 +47,8 @@ export async function createTrialStore(data: {
     phone: string,
     niche: string,
 }) {
+    await verifySuperAdmin();
+
     let authUserId: string | null = null;
     try {
         const password = Math.random().toString(36).slice(-8)
@@ -89,6 +115,7 @@ export async function createTrialStore(data: {
 }
 
 export async function deleteStore(storeId: string) {
+    await verifySuperAdmin();
     try {
         const store = await prisma.establishment.findUnique({
             where: { id: storeId },
@@ -127,6 +154,7 @@ export async function deleteStore(storeId: string) {
 }
 
 export async function updateStore(storeId: string, data: { name?: string, niche?: string, status?: string, trial_ends_at?: string, email?: string }) {
+    await verifySuperAdmin();
     try {
         const payload: Partial<{ name: string, niche: string, status: string, trial_ends_at: Date }> = {}
         if (data.name) payload.name = data.name

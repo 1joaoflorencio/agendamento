@@ -4,6 +4,7 @@ import { useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { deleteService } from './actions'
 import { Trash2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface DeleteServiceButtonProps {
     id: string
@@ -24,8 +25,9 @@ export default function DeleteServiceButton({ id, name }: DeleteServiceButtonPro
         startTransition(async () => {
             try {
                 await deleteService(formData)
+                toast.success('Serviço excluído com sucesso.')
             } catch (error) {
-                alert((error as Error).message || 'Erro ao excluir serviço.')
+                toast.error((error as Error).message || 'Erro ao excluir serviço.')
             }
         })
     }

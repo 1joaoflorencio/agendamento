@@ -2,7 +2,7 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import prisma from '@/lib/prisma'
 import { getTheme } from '@/lib/niche-themes'
-import { Button } from '@/components/ui/button'
+import SearchFilter from '@/components/SearchFilter'
 import { Scissors, Clock, Sparkles } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
@@ -10,7 +10,6 @@ import EditServiceDialog from './EditServiceDialog'
 import ManageAttendantsDialog from './ManageAttendantsDialog'
 import DeleteServiceButton from './DeleteServiceButton'
 import AddServiceDialog from './AddServiceDialog'
-import SearchFilter from '@/components/SearchFilter'
 
 export default async function ServicesPage() {
     const supabase = await createClient()

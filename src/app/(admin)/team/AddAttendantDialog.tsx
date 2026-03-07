@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { createAttendant } from './actions'
 import { Plus, CheckCircle2 } from 'lucide-react'
 import { NichePlaceholders } from '@/lib/niche-themes'
+import { toast } from 'sonner'
 
 interface AddAttendantDialogProps {
     placeholders: NichePlaceholders
@@ -23,12 +24,13 @@ export default function AddAttendantDialog({ placeholders: ph }: AddAttendantDia
             try {
                 await createAttendant(formData)
                 setSuccess(true)
+                toast.success('Profissional cadastrado com sucesso!')
                 setTimeout(() => {
                     setOpen(false)
                     setSuccess(false)
                 }, 1500)
             } catch (error) {
-                alert((error as Error).message || 'Erro ao cadastrar profissional.')
+                toast.error((error as Error).message || 'Erro ao cadastrar profissional.')
             }
         })
     }

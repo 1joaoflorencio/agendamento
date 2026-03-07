@@ -13,6 +13,7 @@ import { CalendarIcon, Clock, ArrowLeft, CheckCircle2, User, Scissors, Calendar 
 import { cn } from "@/lib/utils"
 import { generateGoogleCalendarLink, generateIcsContent } from "@/lib/calendar"
 import type { Establishment, Service, AttendantWithServices, TimeSlot } from "@/types"
+import { toast } from "sonner"
 
 export default function BookingForm({ establishment }: { establishment: Establishment }) {
     const [step, setStep] = useState(1)
@@ -79,9 +80,11 @@ export default function BookingForm({ establishment }: { establishment: Establis
         startTransition(async () => {
             try {
                 await createPublicAppointment(formData)
+                toast.success('Agendamento confirmado!')
                 setStep(5) // Sucesso!
             } catch (error) {
                 setErrorLabel((error as Error).message || "Erro ao agendar.")
+                toast.error((error as Error).message || "Erro ao agendar.")
             }
         })
     }

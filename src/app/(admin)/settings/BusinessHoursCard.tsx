@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { updateBusinessHours } from './actions'
 import { Save, CheckCircle2, CalendarClock } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
 
 
 const DAYS = [
@@ -55,9 +56,10 @@ export default function BusinessHoursCard({ hours }: { hours: { id?: string; day
                 }))
                 await updateBusinessHours(dataToSave)
                 setSavedSuccessfully(true)
+                toast.success('Horários atualizados com sucesso!')
                 setTimeout(() => setSavedSuccessfully(false), 3000)
             } catch (error) {
-                alert((error as Error).message)
+                toast.error((error as Error).message)
             }
         })
     }

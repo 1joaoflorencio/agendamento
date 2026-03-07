@@ -1,14 +1,18 @@
 'use client'
 
 import { createClient } from '@/utils/supabase/client'
-import { redirect, usePathname } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { CalendarDays, LayoutDashboard, Settings, Users, LogOut, Menu, Scissors, ChevronRight, Stethoscope, Sparkles } from 'lucide-react'
+import { CalendarDays, LayoutDashboard, Settings, Users, LogOut, Menu, Scissors, ChevronRight, Stethoscope, Sparkles, UserCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { getTheme } from '@/lib/niche-themes'
+import { Establishment, Attendant } from '@prisma/client'
+import PauseStoreButton from '@/components/PauseStoreButton'
+
+type EstablishmentWithAttendants = Establishment & { attendants: Attendant[] }
 
 export default function AdminLayout({
     children,
@@ -16,12 +20,27 @@ export default function AdminLayout({
     children: React.ReactNode
 }) {
     const pathname = usePathname()
-    const [establishment, setEstablishment] = useState<Establishment | null>(null)
+    const [establishment, setEstablishment] = useState<EstablishmentWithAttendants | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const [isMounted, setIsMounted] = useState(false)
     const supabase = createClient()
 
+    const fetchProfile = useCallback(async () => {
+        try {
+            const response = await fetch('/api/user/profile')
+            if (response.ok) {
+                const data = await response.json()
+                if (data.establishment) {
+                    setEstablishment(data.establishment)
+                }
+            }
+        } catch (error) {
+            console.error('Failed to fetch profile', error)
+        }
+    }, [])
+
     useEffect(() => {
+        // eslint-disable-next-line
         setIsMounted(true)
         const checkUser = async () => {
             setIsLoading(true)
@@ -32,38 +51,21 @@ export default function AdminLayout({
             }
 
             // Busca os dados do estabelecimento via API
-            try {
-                const response = await fetch('/api/user/profile')
-                if (response.ok) {
-                    const data = await response.json()
-                    if (data.establishment) {
-                        setEstablishment(data.establishment)
-                    }
-                }
-            } catch (error) {
-                console.error('Failed to fetch profile', error)
-            } finally {
-                setIsLoading(false)
-            }
+            await fetchProfile()
+            setIsLoading(false)
         }
         checkUser()
-    }, [pathname])
+    }, [pathname, supabase.auth, fetchProfile])
 
     const theme = getTheme(establishment?.niche)
 
-    const getNicheIcon = () => {
-        switch (establishment?.niche) {
-            case 'Barbearia': return Scissors
-            case 'Salao de Beleza': return Sparkles
-            case 'Clinica':
-            default: return Stethoscope
-        }
-    }
-
-    const NicheIcon = getNicheIcon()
+    let CurrentNicheIcon = Stethoscope
+    if (establishment?.niche === 'Barbearia') CurrentNicheIcon = Scissors
+    if (establishment?.niche === 'Salao de Beleza') CurrentNicheIcon = Sparkles
 
     const navLinks = [
         { name: 'Agenda', href: '/dashboard', icon: LayoutDashboard },
+        { name: 'Clientes', href: '/clients', icon: UserCircle },
         { name: 'Equipe', href: '/team', icon: Users },
         { name: 'Serviços', href: '/services', icon: Scissors },
         { name: 'Configurações', href: '/settings', icon: Settings },
@@ -82,7 +84,7 @@ export default function AdminLayout({
                 <div className="p-8 pb-4">
                     <Link href="/dashboard" className="flex items-center gap-3 px-2 group">
                         <div className={cn("w-10 h-10 bg-gradient-to-tr rounded-2xl flex items-center justify-center text-white shadow-lg group-hover:rotate-6 transition-all duration-500", theme.gradient, theme.shadow)}>
-                            <NicheIcon className="h-6 w-6" />
+                            <CurrentNicheIcon className="h-6 w-6" />
                         </div>
                         <div className="flex flex-col overflow-hidden">
                             <span className="font-extrabold text-slate-900 leading-tight truncate">Painel Admin</span>
@@ -171,6 +173,18 @@ export default function AdminLayout({
                                                 </Link>
                                             ))}
                                         </div>
+                                        <div className="mt-8 pt-6 border-t border-slate-100">
+                                            <form action="/auth/signout" method="post">
+                                                <Button
+                                                    variant="ghost"
+                                                    className="w-full justify-start gap-3 p-4 rounded-3xl text-slate-500 hover:text-red-500 hover:bg-red-50 font-bold transition-all"
+                                                    type="submit"
+                                                >
+                                                    <LogOut className="h-5 w-5" />
+                                                    Sair da Conta
+                                                </Button>
+                                            </form>
+                                        </div>
                                     </div>
                                 </SheetContent>
                             </Sheet>
@@ -199,6 +213,15 @@ export default function AdminLayout({
                     </div>
 
                     <div className="flex items-center gap-4">
+                        {isMounted && establishment && (
+                            <PauseStoreButton
+                                tenantId={establishment.id}
+                                currentPauseStart={establishment.pause_start || null}
+                                currentPauseUntil={establishment.paused_until || null}
+                                attendants={establishment.attendants}
+                                onUpdate={fetchProfile}
+                            />
+                        )}
                         <div className="w-10 h-10 bg-slate-100 rounded-full border-2 border-white shadow-sm flex items-center justify-center font-bold text-slate-500 text-sm">
                             {establishment?.name ? establishment.name.substring(0, 2).toUpperCase() : 'CF'}
                         </div>

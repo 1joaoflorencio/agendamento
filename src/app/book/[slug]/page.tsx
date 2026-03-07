@@ -1,6 +1,28 @@
 import { getEstablishmentForBooking } from "../actions"
 import BookingForm from "./BookingForm"
 import { notFound } from "next/navigation"
+import { Metadata } from "next"
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+    const { slug } = await params
+    try {
+        const establishment = await getEstablishmentForBooking(slug)
+        return {
+            title: `Agendamento - ${establishment.name}`,
+            description: `Agende seu horário com ${establishment.name} online de forma rápida e prática.`,
+            openGraph: {
+                title: `Agendamento - ${establishment.name}`,
+                description: `Reserve seu horário facilmente no ${establishment.name}.`,
+                type: "website",
+            }
+        }
+    } catch {
+        return {
+            title: "Agendamento Não Encontrado",
+            description: "A página de agendamento não existe ou está indisponível."
+        }
+    }
+}
 
 export default async function BookingPage({ params }: { params: { slug: string } }) {
     // O Next.js 15 Server Components passa as params via Promise if async
@@ -9,7 +31,7 @@ export default async function BookingPage({ params }: { params: { slug: string }
     let establishment;
     try {
         establishment = await getEstablishmentForBooking(slug)
-    } catch (error) {
+    } catch {
         return notFound()
     }
 

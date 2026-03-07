@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Pencil } from 'lucide-react'
 import { updateAttendant } from './actions'
 import { Attendant } from '@prisma/client'
+import { toast } from 'sonner'
 
 interface EditAttendantDialogProps {
     attendant: Attendant
@@ -19,10 +20,11 @@ export function EditAttendantDialog({ attendant }: EditAttendantDialogProps) {
     async function handleSubmit(formData: FormData) {
         try {
             await updateAttendant(formData)
+            toast.success('Profissional atualizado com sucesso!')
             setOpen(false)
         } catch (error) {
             console.error(error)
-            alert('Erro ao atualizar profissional')
+            toast.error('Erro ao atualizar profissional')
         }
     }
 
