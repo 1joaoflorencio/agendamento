@@ -9,7 +9,7 @@ export default function PreviewPage() {
     const [mode, setMode] = useState<PreviewMode>(null);
 
     // ── Configure aqui ──
-    const SLUG = "clinica-estetica-";               // slug do seu estabelecimento
+    const SLUG = "clinica-estetica";               // slug do seu estabelecimento
     const BASE = "http://localhost:3000";
 
     const urls: Record<"book" | "admin", string> = {
