@@ -336,13 +336,15 @@ export default function AgendaView({ appointments, attendants, initialDate, them
                                                 <MessageCircle className="w-4 h-4 flex-shrink-0" />
                                                 WhatsApp
                                             </a>
-                                            <a
-                                                href={`tel:${appt.client_phone.replace(/\D/g, '')}`}
-                                                className="flex-1 min-w-0 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center gap-2 text-xs font-bold hover:bg-indigo-600 hover:text-white transition-colors"
+                                            <button
+                                                className="flex-1 min-w-0 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center gap-2 text-xs font-bold hover:bg-primary hover:text-primary-foreground transition-colors"
+                                                onClick={() => {
+                                                    window.location.href = `tel:${appt.client_phone.replace(/\D/g, '')}`
+                                                }}
                                             >
                                                 <PhoneCall className="w-4 h-4 flex-shrink-0" />
                                                 Ligar
-                                            </a>
+                                            </button>
                                         </div>
 
                                         {/* Botões de ação (só para SCHEDULED) */}

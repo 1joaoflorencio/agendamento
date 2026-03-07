@@ -165,9 +165,10 @@ export default function EstablishmentProfileCard({ establishment }: Establishmen
                                         <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                     </Button>
                                     <Button
+                                        type="button"
                                         onClick={handleSaveSlug}
-                                        disabled={isSavingSlug || !slugInput}
-                                        className="h-8 sm:h-10 px-3 sm:px-6 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-black ml-0.5 text-xs sm:text-sm flex-shrink-0"
+                                        disabled={isSavingSlug}
+                                        className="h-8 sm:h-10 px-3 sm:px-6 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-black ml-0.5 text-xs sm:text-sm flex-shrink-0 active:scale-95 transition-all"
                                     >
                                         {isSavingSlug ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Salvar'}
                                     </Button>
@@ -199,7 +200,7 @@ export default function EstablishmentProfileCard({ establishment }: Establishmen
                                         onClick={handleCopy}
                                         className={`h-12 sm:h-14 px-4 sm:px-8 rounded-xl sm:rounded-full text-white font-black shadow-lg transition-all active:scale-95 flex items-center gap-2 flex-1 sm:flex-auto justify-center text-sm ${copied
                                             ? 'bg-green-500 hover:bg-green-600 shadow-green-200'
-                                            : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-200'
+                                            : 'bg-primary hover:bg-primary/90 shadow-primary/20'
                                             }`}
                                     >
                                         {copied ? (

@@ -142,9 +142,9 @@ export default function BusinessHoursCard({ hours }: { hours: { id?: string; day
                     disabled={isPending}
                     className={cn(
                         "h-12 sm:h-16 w-full rounded-xl sm:rounded-full font-black text-base sm:text-lg transition-all active:scale-95 shadow-xl sm:shadow-2xl flex items-center justify-center gap-2 sm:gap-3",
-                        savedSuccessfully
-                            ? "bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-200"
-                            : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-200"
+                        isPending
+                            ? "bg-slate-100 text-slate-400 cursor-not-allowed"
+                            : "bg-primary hover:bg-primary/90 text-primary-foreground shadow-primary/20 hover:scale-105 active:scale-95"
                     )}
                 >
                     {isPending ? (

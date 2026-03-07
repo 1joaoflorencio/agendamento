@@ -98,7 +98,8 @@ Basta fazer o login para acessar o painel!`
 
                         <Button
                             onClick={copyToClipboard}
-                            className={`w-full h-14 rounded-2xl font-bold text-white transition-all ${copied ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-indigo-600 hover:bg-indigo-700'}`}
+                            type="button"
+                            className={`w-full h-14 rounded-2xl font-bold text-white transition-all ${copied ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-primary hover:bg-primary/90'}`}
                         >
                             {copied ? (
                                 <><Check className="w-5 h-5 mr-2" /> Copiado para o WhatsApp!</>
@@ -144,8 +145,8 @@ Basta fazer o login para acessar o painel!`
                             </div>
                         </div>
 
-                        <Button disabled={isLoading} type="submit" className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold h-14 rounded-2xl shadow-lg mt-6">
-                            {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Criar Conta (7 dias grátis)'}
+                        <Button disabled={isLoading} type="submit" className="w-full h-14 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-black text-lg transition-all active:scale-[0.98]">
+                            {isLoading ? 'Criando Loja...' : 'Criar Nova Loja'}
                         </Button>
                     </form>
                 )}

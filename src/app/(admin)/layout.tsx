@@ -153,7 +153,7 @@ export default function AdminLayout({
                                     <SheetTitle className="sr-only">Menu Mobile</SheetTitle>
                                     <div className="p-8">
                                         <Link href="/dashboard" className="flex items-center gap-3 mb-10">
-                                            <div className="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white">
+                                            <div className="w-10 h-10 bg-primary rounded-2xl flex items-center justify-center text-primary-foreground">
                                                 <CalendarDays className="h-6 w-6" />
                                             </div>
                                             <span className="font-extrabold text-xl">Admin</span>
@@ -165,7 +165,7 @@ export default function AdminLayout({
                                                     href={link.href}
                                                     className={cn(
                                                         "flex items-center gap-3 p-4 rounded-3xl font-bold transition-all",
-                                                        pathname === link.href ? "bg-indigo-600 text-white" : "text-slate-500"
+                                                        pathname === link.href ? "bg-primary text-primary-foreground" : "text-slate-500 hover:bg-slate-50"
                                                     )}
                                                 >
                                                     <link.icon className="h-5 w-5" />

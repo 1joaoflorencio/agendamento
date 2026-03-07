@@ -31,7 +31,7 @@ export default function NotFound() {
                 </div>
 
                 <div className="pt-4 space-y-3">
-                    <Button asChild className="w-full h-14 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-black shadow-lg shadow-indigo-200 transition-all active:scale-95 flex items-center justify-center gap-2 text-base">
+                    <Button asChild className="w-full h-14 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-black shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2 text-base">
                         <Link href="/">
                             <Home className="w-5 h-5" />
                             Voltar para o Início

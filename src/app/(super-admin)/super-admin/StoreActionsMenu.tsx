@@ -156,8 +156,8 @@ export function StoreActionsMenu({ store }: StoreActionsProps) {
                             <Button type="button" variant="ghost" onClick={() => setIsEditOpen(false)} className="flex-1 text-slate-400 hover:text-white h-12 rounded-xl">
                                 Cancelar
                             </Button>
-                            <Button disabled={isLoading} type="submit" className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold h-12 rounded-xl">
-                                {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Salvar Alterações'}
+                            <Button disabled={isLoading} type="submit" className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-12 rounded-xl">
+                                {isLoading ? 'Salvando...' : 'Salvar Alterações'}
                             </Button>
                         </div>
                     </form>

@@ -14,6 +14,8 @@ import { cn } from "@/lib/utils"
 import { generateGoogleCalendarLink, generateIcsContent } from "@/lib/calendar"
 import type { Establishment, Service, AttendantWithServices, TimeSlot } from "@/types"
 import { toast } from "sonner"
+import { Skeleton } from "@/components/ui/skeleton"
+import { getTheme } from "@/lib/niche-themes"
 
 export default function BookingForm({ establishment }: { establishment: Establishment }) {
     const [step, setStep] = useState(1)
@@ -28,6 +30,8 @@ export default function BookingForm({ establishment }: { establishment: Establis
     const [isSlotLoading, setIsSlotLoading] = useState(false)
     const [errorLabel, setErrorLabel] = useState("")
     const [searchQuery, setSearchQuery] = useState("")
+
+    const theme = getTheme(establishment.niche || undefined)
 
     const { services } = establishment
 
@@ -99,7 +103,7 @@ export default function BookingForm({ establishment }: { establishment: Establis
 
                 {/* HEADER / VOLTAR */}
                 {step > 1 && step < 5 && (
-                    <Button variant="ghost" onClick={() => setStep(step - 1)} className="mb-6 hover:bg-indigo-100/50 text-indigo-600 transition-all rounded-full px-6">
+                    <Button variant="ghost" onClick={() => setStep(step - 1)} className={cn("mb-6 transition-all rounded-full px-6", theme.textPrimary, theme.bgMuted)}>
                         <ArrowLeft className="w-4 h-4 mr-2" /> Voltar
                     </Button>
                 )}
@@ -135,7 +139,7 @@ export default function BookingForm({ establishment }: { establishment: Establis
                             <Input
                                 type="text"
                                 placeholder="Buscar serviço..."
-                                className="pl-12 h-14 rounded-[1.5rem] border-2 border-slate-100 bg-white/80 backdrop-blur-md focus:bg-white focus:border-indigo-400 transition-all font-bold text-slate-700 shadow-sm text-base"
+                                className="pl-12 h-14 rounded-[1.5rem] border-2 border-slate-100 bg-white/80 backdrop-blur-md focus:bg-white transition-all font-bold text-slate-700 shadow-sm text-base"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
@@ -155,12 +159,12 @@ export default function BookingForm({ establishment }: { establishment: Establis
                                             <h3 className="text-base font-black text-slate-800 leading-tight">{svc.name}</h3>
                                             {svc.description && <p className="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed mt-0.5 pr-2">{svc.description}</p>}
                                             <div className="flex items-center gap-3 mt-2">
-                                                <span className="text-xs font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">{formatPrice(svc.price)}</span>
+                                                <span className={cn("text-xs font-black px-2 py-0.5 rounded-md", theme.textPrimary, theme.bgMuted)}>{formatPrice(svc.price)}</span>
                                                 <span className="text-[11px] font-bold text-slate-400 flex items-center"><Clock className="w-3.5 h-3.5 mr-1 text-slate-300" /> {svc.duration_minutes}m</span>
                                             </div>
                                         </div>
 
-                                        <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-indigo-600 group-hover:text-white transition-colors shrink-0 shadow-sm border border-slate-100 group-hover:border-indigo-600">
+                                        <div className={cn("w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 transition-colors shrink-0 shadow-sm border border-slate-100", `group-hover:${theme.buttonActive.split(' ')[0]} group-hover:text-white`)}>
                                             <ChevronRight className="w-4 h-4 ml-[1px]" />
                                         </div>
 
@@ -179,7 +183,7 @@ export default function BookingForm({ establishment }: { establishment: Establis
                 {step === 2 && (
                     <div className="space-y-8 animate-in fade-in slide-in-from-right-12 duration-400">
                         <div className="flex flex-col items-center text-center space-y-4 pt-2">
-                            <span className="inline-block text-[10px] font-black text-indigo-500 bg-indigo-50 border border-indigo-100 px-4 py-1.5 rounded-full uppercase tracking-widest shadow-sm">
+                            <span className={cn("inline-block text-[10px] font-black border px-4 py-1.5 rounded-full uppercase tracking-widest shadow-sm", theme.textPrimary, theme.bgMuted, theme.borderMuted)}>
                                 {selectedService?.name}
                             </span>
                             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 drop-shadow-sm px-4">
@@ -193,12 +197,12 @@ export default function BookingForm({ establishment }: { establishment: Establis
                                     className="group cursor-pointer transition-all duration-300 border-2 border-slate-100 hover:border-indigo-300 hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-1 overflow-hidden relative bg-white/90 backdrop-blur-xl rounded-[1.5rem] flex flex-col items-center justify-center p-5 sm:p-6 text-center"
                                     onClick={() => handleAttendantSelect(att)}
                                 >
-                                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-tr from-indigo-500 to-violet-500 rounded-[1.2rem] flex items-center justify-center text-white shadow-md shadow-indigo-200 border-2 border-white mb-3 sm:mb-4">
+                                    <div className={cn("w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-tr rounded-[1.2rem] flex items-center justify-center text-white shadow-md border-2 border-white mb-3 sm:mb-4", theme.gradient, theme.shadow)}>
                                         <span className="text-3xl font-black">{att.name ? att.name.charAt(0).toUpperCase() : <User className="w-8 h-8" />}</span>
                                     </div>
                                     <div className="space-y-1">
                                         <span className="font-extrabold text-base sm:text-lg block text-slate-800 leading-tight line-clamp-1">{att.name}</span>
-                                        <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest block">Profissional</span>
+                                        <span className={cn("text-[10px] font-black uppercase tracking-widest block", theme.textPrimary)}>Profissional</span>
                                     </div>
                                 </Card>
                             ))}
@@ -212,7 +216,7 @@ export default function BookingForm({ establishment }: { establishment: Establis
                 {step === 3 && (
                     <div className="space-y-8 animate-in fade-in slide-in-from-right-12 duration-400">
                         <div className="flex flex-col items-center text-center space-y-4 pt-2">
-                            <span className="inline-block text-[10px] font-black text-indigo-500 bg-indigo-50 border border-indigo-100 px-4 py-1.5 rounded-full uppercase tracking-widest shadow-sm">
+                            <span className={cn("inline-block text-[10px] font-black border px-4 py-1.5 rounded-full uppercase tracking-widest shadow-sm", theme.textPrimary, theme.bgMuted, theme.borderMuted)}>
                                 Agenda de {selectedAttendant?.name}
                             </span>
                             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 drop-shadow-sm px-4">
@@ -237,13 +241,13 @@ export default function BookingForm({ establishment }: { establishment: Establis
                             <div className="space-y-6">
                                 <div className="flex items-center justify-between px-2">
                                     <h3 className="font-black text-xl flex items-center gap-3 text-slate-800">
-                                        <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center">
-                                            <Clock className="w-5 h-5 text-indigo-600" />
+                                        <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", theme.bgMuted)}>
+                                            <Clock className={cn("w-5 h-5", theme.textPrimary)} />
                                         </div>
                                         Horários
                                     </h3>
                                     {selectedDate && (
-                                        <span className="text-xs font-black bg-indigo-600 text-white px-4 py-2 rounded-xl uppercase tracking-widest shadow-md shadow-indigo-200">
+                                        <span className={cn("text-xs font-black text-white px-4 py-2 rounded-xl uppercase tracking-widest", theme.buttonActive)}>
                                             {format(selectedDate, "dd 'de' MMMM", { locale: ptBR })}
                                         </span>
                                     )}
@@ -256,7 +260,7 @@ export default function BookingForm({ establishment }: { establishment: Establis
                                     </div>
                                 ) : isSlotLoading ? (
                                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                        {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="h-16 bg-slate-100 rounded-2xl animate-pulse" />)}
+                                        {[1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="h-14 sm:h-16 w-full rounded-xl sm:rounded-2xl" />)}
                                     </div>
                                 ) : allSlots.length === 0 || allSlots.every(s => !s.available) ? (
                                     <div className="bg-slate-50 border-[3px] border-slate-100 rounded-[2.5rem] p-12 text-center shadow-inner mt-4">
@@ -277,8 +281,8 @@ export default function BookingForm({ establishment }: { establishment: Establis
                                                     !slot.available
                                                         ? "border-slate-100 bg-slate-50 text-slate-300 line-through cursor-not-allowed opacity-60"
                                                         : selectedTime === slot.time
-                                                            ? "border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-200"
-                                                            : "border-slate-100 hover:border-indigo-500/30 hover:bg-indigo-50 text-slate-700 bg-white hover:scale-105 active:scale-95"
+                                                            ? theme.buttonActive
+                                                            : cn("border-slate-100 hover:scale-105 active:scale-95", theme.bgMuted, theme.textPrimary)
                                                 )}
                                                 onClick={() => {
                                                     if (!slot.available) {
@@ -301,7 +305,7 @@ export default function BookingForm({ establishment }: { establishment: Establis
                 {step === 4 && (
                     <div className="space-y-8 animate-in fade-in slide-in-from-right-12 duration-400 pb-12">
                         <div className="text-center space-y-3">
-                            <span className="inline-block text-xs font-black text-indigo-500 bg-indigo-50 border border-indigo-100 px-4 py-1.5 rounded-full uppercase tracking-[0.2em] shadow-sm">
+                            <span className={cn("inline-block text-xs font-black border px-4 py-1.5 rounded-full uppercase tracking-[0.2em] shadow-sm", theme.textPrimary, theme.bgMuted, theme.borderMuted)}>
                                 Último Passo
                             </span>
                             <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 drop-shadow-sm">
@@ -311,8 +315,8 @@ export default function BookingForm({ establishment }: { establishment: Establis
                         </div>
 
                         {/* CONFIRMATION SUMMARY CARD - LIGHT & COMPACT */}
-                        <div className="bg-white border-2 border-indigo-50 rounded-[2rem] p-6 mb-6 flex flex-col gap-3 shadow-xl shadow-indigo-500/5 relative overflow-hidden">
-                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-violet-500"></div>
+                        <div className={cn("bg-white border-2 rounded-[2rem] p-6 mb-6 flex flex-col gap-3 shadow-xl relative overflow-hidden", theme.borderMuted, theme.shadow)}>
+                            <div className={cn("absolute top-0 left-0 w-full h-1 bg-gradient-to-r", theme.gradient)}></div>
                             <div className="flex justify-between items-center border-b border-slate-100 pb-3">
                                 <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest">Serviço</span>
                                 <span className="text-slate-800 text-sm font-black text-right">{selectedService?.name}</span>
@@ -325,7 +329,7 @@ export default function BookingForm({ establishment }: { establishment: Establis
                                 <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest">Data e Hora</span>
                                 <div className="text-right">
                                     <span className="text-slate-800 text-sm font-black">{selectedDate && format(selectedDate, "dd 'de' MMMM", { locale: ptBR })}</span>
-                                    <span className="text-indigo-600 text-sm font-black ml-1.5 px-2 py-0.5 bg-indigo-50 rounded-md">{selectedTime}</span>
+                                    <span className={cn("text-sm font-black ml-1.5 px-2 py-0.5 rounded-md", theme.textPrimary, theme.bgMuted)}>{selectedTime}</span>
                                 </div>
                             </div>
                         </div>
@@ -351,7 +355,7 @@ export default function BookingForm({ establishment }: { establishment: Establis
                                 <Input id="client_email" name="client_email" type="email" placeholder="seu@email.com" className="h-14 rounded-2xl border-2 border-slate-100 bg-white focus:bg-white focus:border-indigo-500 transition-all font-bold text-slate-700 px-4 text-base shadow-sm" />
                             </div>
 
-                            <Button type="submit" className="w-full mt-4 text-lg h-16 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black shadow-lg shadow-indigo-200 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-3" disabled={isPending}>
+                            <Button type="submit" className={cn("w-full mt-4 text-lg h-16 rounded-2xl font-black transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-3", theme.buttonActive)} disabled={isPending}>
                                 {isPending ? (
                                     <>Aguarde...</>
                                 ) : (
@@ -411,11 +415,11 @@ export default function BookingForm({ establishment }: { establishment: Establis
                                 </div>
                                 <CardContent className="p-5 text-left space-y-3">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600"><Scissors className="w-4 h-4" /></div>
+                                        <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center", theme.bgMuted, theme.textPrimary)}><Scissors className="w-4 h-4" /></div>
                                         <span className="font-bold text-slate-800 text-sm">{selectedService?.name}</span>
                                     </div>
                                     <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600"><User className="w-4 h-4" /></div>
+                                        <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center", theme.bgMuted, theme.textPrimary)}><User className="w-4 h-4" /></div>
                                         <span className="font-bold text-slate-800 text-sm">{selectedAttendant?.name}</span>
                                     </div>
                                 </CardContent>
@@ -434,7 +438,7 @@ export default function BookingForm({ establishment }: { establishment: Establis
                             </div>
 
                             <div className="pt-2">
-                                <Button variant="ghost" className="text-slate-400 hover:text-indigo-600 font-bold uppercase tracking-widest text-[10px]" onClick={() => window.location.reload()}>
+                                <Button variant="ghost" className={cn("font-bold uppercase tracking-widest text-[10px]", theme.textPrimary)} onClick={() => window.location.reload()}>
                                     <ArrowLeft className="w-3 h-3 mr-1.5" /> Fazer outro agendamento
                                 </Button>
                             </div>

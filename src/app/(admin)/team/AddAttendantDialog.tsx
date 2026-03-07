@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { createAttendant } from './actions'
-import { Plus, CheckCircle2 } from 'lucide-react'
+import { Clock, Scissors, Plus, Trash2, Edit2, Pencil, StopCircle, PlayCircle, Loader2, UserPlus, CheckCircle2 } from 'lucide-react'
 import { NichePlaceholders } from '@/lib/niche-themes'
 import { toast } from 'sonner'
 
@@ -38,8 +38,8 @@ export default function AddAttendantDialog({ placeholders: ph }: AddAttendantDia
     return (
         <Dialog open={open} onOpenChange={(isOpen) => { setOpen(isOpen); setSuccess(false) }}>
             <DialogTrigger asChild>
-                <Button className="h-12 sm:h-14 px-6 sm:px-10 rounded-2xl sm:rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-black shadow-lg shadow-indigo-200 transition-all active:scale-95 flex items-center justify-center gap-2 text-sm w-full sm:w-auto">
-                    <Plus className="w-5 h-5" /> Novo Profissional
+                <Button className="h-12 sm:h-14 px-6 sm:px-10 rounded-2xl sm:rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-black shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2 text-sm w-full sm:w-auto">
+                    Nova Pessoa <UserPlus className="h-5 w-5 ml-1" />
                 </Button>
             </DialogTrigger>
             <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-[425px] rounded-2xl sm:rounded-[2rem] border-none shadow-xl p-6 sm:p-8 bg-white">

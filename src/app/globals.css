@@ -49,24 +49,26 @@
 
 :root {
   --radius: 1.5rem;
-  --background: 210 40% 98%;
+  --background: 220 33% 98%;
   --foreground: 222 47% 11%;
   --card: 0 0% 100%;
   --card-foreground: 222 47% 11%;
   --popover: 0 0% 100%;
   --popover-foreground: 222 47% 11%;
-  --primary: 243 75% 59%;
+  /* Primary: Vibrant Electric Indigo */
+  --primary: 250 84% 54%;
   --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222 47% 11.2%;
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96.1%;
-  --accent-foreground: 222 47% 11.2%;
-  --destructive: 0 84.2% 60.2%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 243 75% 59%;
+  /* Secondary: Soft Slate Violet */
+  --secondary: 220 14% 96%;
+  --secondary-foreground: 220 47% 11%;
+  --muted: 220 14% 96%;
+  --muted-foreground: 220 16% 47%;
+  --accent: 220 14% 96%;
+  --accent-foreground: 220 47% 11%;
+  --destructive: 348 83% 47%;
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 250 84% 54%;
 }
 
 .dark {
