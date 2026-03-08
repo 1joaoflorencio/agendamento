@@ -60,8 +60,11 @@ export async function getAvailableTimeSlots(
 
     const dayOfWeek = date.getDay(); // 0 = Domingo, 1 = Segunda...
 
-    // 2.2 Run static checks concurrently
-    const [establishment, attendant, businessHour, service] = await Promise.all([
+    const start = startOfDay(date);
+    const end = endOfDay(date);
+
+    // 2.2 Run ALL static checks and appointment searches concurrently
+    const [establishment, attendant, businessHour, service, existingAppointments] = await Promise.all([
         prisma.establishment.findUnique({
             where: { id: tenantId },
             select: { pause_start: true, paused_until: true }
@@ -80,6 +83,20 @@ export async function getAvailableTimeSlots(
         }),
         prisma.service.findUnique({
             where: { id: serviceId }
+        }),
+        prisma.appointment.findMany({
+            where: {
+                tenant_id: tenantId,
+                attendant_id: attendantId,
+                status: { not: "CANCELED" },
+                date_time: {
+                    gte: start,
+                    lte: end
+                }
+            },
+            include: {
+                service: { select: { duration_minutes: true } }
+            }
         })
     ]);
 
@@ -106,25 +123,6 @@ export async function getAvailableTimeSlots(
     if (!service) throw new Error("Serviço não encontrado")
 
     const duration = service.duration_minutes
-
-    // Busca agendamentos do profissional no dia
-    const start = startOfDay(date);
-    const end = endOfDay(date);
-
-    const existingAppointments = await prisma.appointment.findMany({
-        where: {
-            tenant_id: tenantId,
-            attendant_id: attendantId,
-            status: { not: "CANCELED" },
-            date_time: {
-                gte: start,
-                lte: end
-            }
-        },
-        include: {
-            service: { select: { duration_minutes: true } }
-        }
-    })
 
     // Mapeia os intervalos de tempo ocupados
     const blockedIntervals = existingAppointments.map((appt) => {
