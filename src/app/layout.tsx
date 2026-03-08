@@ -9,7 +9,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Agendador Premium",
+  title: "CoreAgenda",
   description: "Sistema de agendamento multitenant de alto nível",
 };
 
