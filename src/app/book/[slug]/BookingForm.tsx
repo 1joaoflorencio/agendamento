@@ -149,7 +149,7 @@ export default function BookingForm({ establishment }: { establishment: Establis
                             {filteredServices.map((svc: Service) => (
                                 <Card
                                     key={svc.id}
-                                    className="group cursor-pointer transition-all duration-300 border-2 border-slate-100 hover:border-indigo-300 hover:shadow-md hover:shadow-indigo-500/10 hover:-translate-y-[1px] active:scale-[0.98] overflow-hidden relative bg-white/90 backdrop-blur-xl rounded-[1rem]"
+                                    className="group cursor-pointer transition-all duration-300 border-2 border-slate-100 hover:border-indigo-300 hover:shadow-md hover:shadow-indigo-500/10 hover:-translate-y-[1px] active:scale-95 active:bg-slate-50/50 active:shadow-none overflow-hidden relative bg-white/90 backdrop-blur-xl rounded-[1rem]"
                                     onClick={() => handleServiceSelect(svc)}
                                 >
                                     <div className="px-4 py-3 flex items-center justify-between gap-3">
@@ -193,7 +193,7 @@ export default function BookingForm({ establishment }: { establishment: Establis
                             {attendantsForService.map((att: AttendantWithServices) => (
                                 <Card
                                     key={att.id}
-                                    className="group cursor-pointer transition-all duration-300 border-2 border-slate-100 hover:border-indigo-300 hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-1 active:scale-[0.98] overflow-hidden relative bg-white/90 backdrop-blur-xl rounded-[1.5rem] flex flex-col items-center justify-center p-5 sm:p-6 text-center"
+                                    className="group cursor-pointer transition-all duration-300 border-2 border-slate-100 hover:border-indigo-300 hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-1 active:scale-95 active:bg-slate-50/50 active:shadow-none overflow-hidden relative bg-white/90 backdrop-blur-xl rounded-[1.5rem] flex flex-col items-center justify-center p-5 sm:p-6 text-center"
                                     onClick={() => handleAttendantSelect(att)}
                                 >
                                     <div className={cn("w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-tr rounded-[1.2rem] flex items-center justify-center text-white shadow-md border-2 border-white mb-3 sm:mb-4", theme.gradient, theme.shadow)}>
@@ -282,7 +282,7 @@ export default function BookingForm({ establishment }: { establishment: Establis
                                                         ? "border-slate-100 bg-slate-50 text-slate-300 line-through cursor-not-allowed opacity-60"
                                                         : selectedTime === slot.time
                                                             ? theme.buttonActive
-                                                            : cn("border-slate-100 hover:scale-105 active:scale-95", theme.bgMuted, theme.textPrimary)
+                                                            : cn("border-slate-100 hover:scale-105 active:scale-90 active:opacity-70", theme.bgMuted, theme.textPrimary)
                                                 )}
                                                 onClick={() => {
                                                     if (!slot.available) {
@@ -355,7 +355,7 @@ export default function BookingForm({ establishment }: { establishment: Establis
                                 <Input id="client_email" name="client_email" type="email" placeholder="seu@email.com" className="h-14 rounded-2xl border-2 border-slate-100 bg-white focus:bg-white focus:border-indigo-500 transition-all font-bold text-slate-700 px-4 text-base shadow-sm" />
                             </div>
 
-                            <Button type="submit" className={cn("w-full mt-4 text-lg h-16 rounded-2xl font-black transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-3", theme.buttonActive)} disabled={isPending}>
+                            <Button type="submit" className={cn("w-full mt-4 text-lg h-16 rounded-2xl font-black transition-all hover:-translate-y-1 active:scale-95 active:opacity-80 active:shadow-none flex items-center justify-center gap-3", theme.buttonActive)} disabled={isPending}>
                                 {isPending ? (
                                     <>Aguarde...</>
                                 ) : (
