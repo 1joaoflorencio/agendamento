@@ -1,7 +1,7 @@
 "use server"
 
 import prisma from '@/lib/prisma'
-import { startOfDay, endOfDay, addMinutes, format, isBefore, isAfter } from 'date-fns'
+import { format, isBefore, isAfter } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { sendWhatsAppMessage } from '@/lib/whatsapp'
 
@@ -55,13 +55,13 @@ export async function getAvailableTimeSlots(
     dateStr: string // YYYY-MM-DD
 ) {
 
-    // Forçamos o timezone exato da string para não cair no dia anterior em UTC -3
-    const date = new Date(`${dateStr}T00:00:00`);
+    // Bypass local timezone mechanics by appending strict UTC-3 offset
+    const date = new Date(`${dateStr}T00:00:00.000-03:00`);
 
     const dayOfWeek = date.getDay(); // 0 = Domingo, 1 = Segunda...
 
-    const start = startOfDay(date);
-    const end = endOfDay(date);
+    const start = new Date(`${dateStr}T00:00:00.000-03:00`);
+    const end = new Date(`${dateStr}T23:59:59.999-03:00`);
 
     // 2.2 Run ALL static checks and appointment searches concurrently
     const [establishment, attendant, businessHour, service, existingAppointments] = await Promise.all([
@@ -124,35 +124,36 @@ export async function getAvailableTimeSlots(
 
     const duration = service.duration_minutes
 
-    // Mapeia os intervalos de tempo ocupados
+    // Mapeia os intervalos de tempo ocupados usando tempos absolutos em UTC subjacente
     const blockedIntervals = existingAppointments.map((appt) => {
         const apptDuration = appt.service ? appt.service.duration_minutes : 60; // fallback
 
         return {
             start: appt.date_time,
-            end: addMinutes(appt.date_time, apptDuration)
+            end: new Date(appt.date_time.getTime() + apptDuration * 60000)
         }
     })
 
     const allSlots: { time: string; available: boolean }[] = []
 
-    let currentSlot = new Date(date);
-    currentSlot.setHours(startHour, startMin, 0, 0);
+    let currentMinute = startHour * 60 + startMin;
+    const endMinute = endHour * 60 + endMin;
 
-    const endOfDayLimit = new Date(date);
-    endOfDayLimit.setHours(endHour, endMin, 0, 0);
-
-    const now = new Date();
+    const now = new Date(); // now represents absolute perfect time regardless of server timezone
     const INCREMENT = duration; // o pulo de horário agora segue o tempo exato do serviço
 
-    while (addMinutes(currentSlot, duration) <= endOfDayLimit) {
-        const slotStart = currentSlot;
-        const slotEnd = addMinutes(currentSlot, duration);
-        const timeStr = format(slotStart, "HH:mm");
+    while (currentMinute + duration <= endMinute) {
+        const h = Math.floor(currentMinute / 60).toString().padStart(2, '0');
+        const m = (currentMinute % 60).toString().padStart(2, '0');
+        const timeStr = `${h}:${m}`;
+
+        // Crio o slot forçando o timezone local (UTC-3)
+        const slotStart = new Date(`${dateStr}T${h}:${m}:00.000-03:00`);
+        const slotEnd = new Date(slotStart.getTime() + duration * 60000);
 
         if (isBefore(slotStart, now)) {
             allSlots.push({ time: timeStr, available: false });
-            currentSlot = addMinutes(currentSlot, INCREMENT);
+            currentMinute += INCREMENT;
             continue;
         }
 
@@ -176,7 +177,7 @@ export async function getAvailableTimeSlots(
 
         if (isStorePaused || isAttendantPaused || isLegacyStorePaused || isLegacyAttendantPaused) {
             allSlots.push({ time: timeStr, available: false });
-            currentSlot = addMinutes(currentSlot, INCREMENT);
+            currentMinute += INCREMENT;
             continue;
         }
 
@@ -190,7 +191,7 @@ export async function getAvailableTimeSlots(
 
         allSlots.push({ time: timeStr, available: !isOverlapping });
 
-        currentSlot = addMinutes(currentSlot, INCREMENT);
+        currentMinute += INCREMENT;
     }
 
     return allSlots;
@@ -218,9 +219,10 @@ export async function createPublicAppointment(formData: FormData) {
     }
 
     const [hours, minutes] = timeStr.split(":").map(Number)
-    // Forçamos o timezone local
-    const dateTime = new Date(`${dateStr}T00:00:00`)
-    dateTime.setHours(hours, minutes, 0, 0)
+    // Forçamos o timezone do Brasil (-03:00) na construção da data para que seja salvo como hora exata em UTC
+    const hStr = hours.toString().padStart(2, '0')
+    const mStr = minutes.toString().padStart(2, '0')
+    const dateTime = new Date(`${dateStr}T${hStr}:${mStr}:00.000-03:00`)
 
     // Dupla checagem contra corrida (Dois clientes marcando ao mesmo tempo)
     const allSlots = await getAvailableTimeSlots(tenant_id, attendant_id, service_id, dateStr);
