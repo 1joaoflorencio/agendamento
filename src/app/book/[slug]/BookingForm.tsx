@@ -149,7 +149,7 @@ export default function BookingForm({ establishment }: { establishment: Establis
                             {filteredServices.map((svc: Service) => (
                                 <Card
                                     key={svc.id}
-                                    className="group cursor-pointer transition-all duration-300 border-2 border-slate-100 hover:border-indigo-300 hover:shadow-md hover:shadow-indigo-500/10 hover:-translate-y-[1px] overflow-hidden relative bg-white/90 backdrop-blur-xl rounded-[1rem]"
+                                    className="group cursor-pointer transition-all duration-300 border-2 border-slate-100 hover:border-indigo-300 hover:shadow-md hover:shadow-indigo-500/10 hover:-translate-y-[1px] active:scale-[0.98] overflow-hidden relative bg-white/90 backdrop-blur-xl rounded-[1rem]"
                                     onClick={() => handleServiceSelect(svc)}
                                 >
                                     <div className="px-4 py-3 flex items-center justify-between gap-3">
@@ -193,7 +193,7 @@ export default function BookingForm({ establishment }: { establishment: Establis
                             {attendantsForService.map((att: AttendantWithServices) => (
                                 <Card
                                     key={att.id}
-                                    className="group cursor-pointer transition-all duration-300 border-2 border-slate-100 hover:border-indigo-300 hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-1 overflow-hidden relative bg-white/90 backdrop-blur-xl rounded-[1.5rem] flex flex-col items-center justify-center p-5 sm:p-6 text-center"
+                                    className="group cursor-pointer transition-all duration-300 border-2 border-slate-100 hover:border-indigo-300 hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-1 active:scale-[0.98] overflow-hidden relative bg-white/90 backdrop-blur-xl rounded-[1.5rem] flex flex-col items-center justify-center p-5 sm:p-6 text-center"
                                     onClick={() => handleAttendantSelect(att)}
                                 >
                                     <div className={cn("w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-tr rounded-[1.2rem] flex items-center justify-center text-white shadow-md border-2 border-white mb-3 sm:mb-4", theme.gradient, theme.shadow)}>
