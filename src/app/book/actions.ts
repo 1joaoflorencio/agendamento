@@ -4,6 +4,8 @@ import prisma from '@/lib/prisma'
 import { format, isBefore, isAfter } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { sendWhatsAppMessage } from '@/lib/whatsapp'
+import { headers } from 'next/headers'
+import { createPublicAppointmentSchema } from '@/lib/validations'
 
 // Simple in-memory rate limiter (resets on server restart)
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
@@ -12,6 +14,18 @@ const RATE_LIMIT_WINDOW = 60_000 // per minute
 
 function checkRateLimit(key: string): boolean {
     const now = Date.now()
+
+    // OTIMIZAÇÃO: Varredura de Memória e Proteção contra Vazamento (OOM Protection)
+    // Se passarmos de 5.000 IPs guardados na memória (Indicativo de ataque pesado)
+    if (rateLimitMap.size > 5000) {
+        for (const [k, v] of rateLimitMap.entries()) {
+            if (now > v.resetAt) rateLimitMap.delete(k)
+        }
+        // Se após a varredura ainda tivermos mais de 5.000 (Ataque simultâneo gigantesco),
+        // limpamos tudo como um disjuntor de emergência para evitar gargalos de lentidão (Garbage Collection)
+        if (rateLimitMap.size > 5000) rateLimitMap.clear()
+    }
+
     const entry = rateLimitMap.get(key)
     if (!entry || now > entry.resetAt) {
         rateLimitMap.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW })
@@ -199,24 +213,45 @@ export async function getAvailableTimeSlots(
 
 // 3. Create Appointment (Public Booking)
 export async function createPublicAppointment(formData: FormData) {
-    const tenant_id = formData.get("tenant_id") as string
-    const attendant_id = formData.get("attendant_id") as string
-    const service_id = formData.get("service_id") as string
-    const dateStr = formData.get("date") as string // "YYYY-MM-DD"
-    const timeStr = formData.get("time") as string // "HH:mm"
-    const client_name = formData.get("client_name") as string
-    const client_phone = formData.get("client_phone") as string
-    const client_email = formData.get("client_email") as string
+    // SECURITY: IP-based Rate Limiting (Prevent DoS)
+    const headersList = await headers();
+    const ip = headersList.get('x-forwarded-for') || headersList.get('x-real-ip') || 'unknown-ip';
 
-    if (!tenant_id || !attendant_id || !service_id || !dateStr || !timeStr || !client_name || !client_phone) {
-        throw new Error("Preencha todos os campos obrigatórios")
+    if (!checkRateLimit(ip)) {
+        throw new Error("Muitas tentativas deste dispositivo. Aguarde um minuto antes de tentar novamente.");
     }
 
-    // Rate limiting by phone number
+    // SECURITY: Zod Input Validation (Prevent Injection/Bad Data)
+    const rawData = {
+        tenant_id: formData.get("tenant_id"),
+        attendant_id: formData.get("attendant_id"),
+        service_id: formData.get("service_id"),
+        date: formData.get("date"),
+        time: formData.get("time"),
+        client_name: formData.get("client_name"),
+        client_phone: formData.get("client_phone"),
+        client_email: formData.get("client_email"),
+    };
+
+    const validatedFields = createPublicAppointmentSchema.safeParse(rawData);
+
+    if (!validatedFields.success) {
+        const firstError = validatedFields.error.issues[0]?.message;
+        throw new Error(firstError || "Dados inválidos fornecidos no formulário.");
+    }
+
+    const {
+        tenant_id,
+        attendant_id,
+        service_id,
+        date: dateStr,
+        time: timeStr,
+        client_name,
+        client_phone,
+        client_email
+    } = validatedFields.data;
+
     const cleanPhone = client_phone.replace(/\D/g, '')
-    if (!checkRateLimit(cleanPhone)) {
-        throw new Error("Muitas tentativas. Aguarde um momento antes de tentar novamente.")
-    }
 
     const [hours, minutes] = timeStr.split(":").map(Number)
     // Forçamos o timezone do Brasil (-03:00) na construção da data para que seja salvo como hora exata em UTC

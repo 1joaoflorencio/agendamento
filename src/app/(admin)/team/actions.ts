@@ -3,18 +3,26 @@
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { getEstablishmentId } from '@/lib/auth'
-
-
+import { attendantSchema, attendantUpdateSchema } from '@/lib/validations'
 
 export async function createAttendant(formData: FormData) {
     const tenantId = await getEstablishmentId()
     if (!tenantId) throw new Error('Não autorizado.')
 
-    const name = formData.get('name') as string
-    const email = formData.get('email') as string
-    const phone = formData.get('phone') as string
+    const rawData = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+    };
 
-    if (!name) throw new Error('O nome é obrigatório.')
+    const validatedFields = attendantSchema.safeParse(rawData);
+
+    if (!validatedFields.success) {
+        const firstError = validatedFields.error.issues[0]?.message;
+        throw new Error(firstError || 'Campos obrigatórios inválidos.');
+    }
+
+    const { name, email, phone } = validatedFields.data;
 
     try {
         await prisma.attendant.create({
@@ -57,12 +65,21 @@ export async function updateAttendant(formData: FormData) {
     const tenantId = await getEstablishmentId()
     if (!tenantId) throw new Error('Não autorizado.')
 
-    const id = formData.get('id') as string
-    const name = formData.get('name') as string
-    const email = formData.get('email') as string
-    const phone = formData.get('phone') as string
+    const rawData = {
+        id: formData.get('id'),
+        name: formData.get('name'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+    };
 
-    if (!id || !name) throw new Error('ID e Nome são obrigatórios.')
+    const validatedFields = attendantUpdateSchema.safeParse(rawData);
+
+    if (!validatedFields.success) {
+        const firstError = validatedFields.error.issues[0]?.message;
+        throw new Error(firstError || 'Campos obrigatórios inválidos.');
+    }
+
+    const { id, name, email, phone } = validatedFields.data;
 
     try {
         await prisma.attendant.update({

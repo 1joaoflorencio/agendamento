@@ -3,22 +3,28 @@
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { getEstablishmentId } from '@/lib/auth'
-
-
+import { serviceSchema, serviceUpdateSchema } from '@/lib/validations'
 
 export async function createService(formData: FormData) {
     const tenantId = await getEstablishmentId()
     if (!tenantId) throw new Error('Não autorizado.')
 
-    const name = formData.get('name') as string
-    const description = formData.get('description') as string
-    const duration = parseInt(formData.get('duration') as string, 10)
-    const price = parseFloat(formData.get('price') as string)
-    const attendantIds = formData.getAll('attendant_ids') as string[]
+    const rawData = {
+        name: formData.get('name'),
+        description: formData.get('description'),
+        duration: parseInt(formData.get('duration') as string, 10),
+        price: parseFloat(formData.get('price') as string),
+        attendant_ids: formData.getAll('attendant_ids'),
+    };
 
-    if (!name || isNaN(duration) || isNaN(price)) {
-        throw new Error('Campos obrigatórios inválidos.')
+    const validatedFields = serviceSchema.safeParse(rawData);
+
+    if (!validatedFields.success) {
+        const firstError = validatedFields.error.issues[0]?.message;
+        throw new Error(firstError || 'Campos obrigatórios inválidos.');
     }
+
+    const { name, description, duration, price, attendant_ids } = validatedFields.data;
 
     try {
         const service = await prisma.service.create({
@@ -28,9 +34,9 @@ export async function createService(formData: FormData) {
                 description: description || null,
                 duration_minutes: duration,
                 price,
-                ...(attendantIds.length > 0 ? {
+                ...(attendant_ids && attendant_ids.length > 0 ? {
                     attendants: {
-                        create: attendantIds.map(id => ({
+                        create: attendant_ids.map(id => ({
                             attendant_id: id
                         }))
                     }
@@ -69,15 +75,22 @@ export async function updateService(formData: FormData) {
     const tenantId = await getEstablishmentId()
     if (!tenantId) throw new Error('Não autorizado.')
 
-    const id = formData.get('id') as string
-    const name = formData.get('name') as string
-    const description = formData.get('description') as string
-    const duration = parseInt(formData.get('duration') as string, 10)
-    const price = parseFloat(formData.get('price') as string)
+    const rawData = {
+        id: formData.get('id'),
+        name: formData.get('name'),
+        description: formData.get('description'),
+        duration: parseInt(formData.get('duration') as string, 10),
+        price: parseFloat(formData.get('price') as string),
+    };
 
-    if (!id || !name || isNaN(duration) || isNaN(price)) {
-        throw new Error('Campos obrigatórios inválidos.')
+    const validatedFields = serviceUpdateSchema.safeParse(rawData);
+
+    if (!validatedFields.success) {
+        const firstError = validatedFields.error.issues[0]?.message;
+        throw new Error(firstError || 'Campos obrigatórios inválidos.');
     }
+
+    const { id, name, description, duration, price } = validatedFields.data;
 
     try {
         await prisma.service.update({

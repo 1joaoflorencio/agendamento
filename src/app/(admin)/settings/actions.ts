@@ -3,17 +3,27 @@
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { getEstablishmentId } from '@/lib/auth'
-
-
+import { whatsappSettingsSchema, businessHoursArraySchema, establishmentProfileSchema, establishmentSlugSchema } from '@/lib/validations'
 
 export async function updateWhatsAppSettings(formData: FormData) {
     const tenantId = await getEstablishmentId()
     if (!tenantId) throw new Error('Não autorizado.')
 
-    const instanceName = formData.get('instanceName') as string
-    const apiKey = formData.get('apiKey') as string
-    const apiUrl = formData.get('apiUrl') as string
-    const enabled = formData.get('enabled') === 'true'
+    const rawData = {
+        apiUrl: formData.get('apiUrl'),
+        instanceName: formData.get('instanceName'),
+        apiKey: formData.get('apiKey'),
+        enabled: formData.get('enabled') === 'true',
+    }
+
+    const validatedFields = whatsappSettingsSchema.safeParse(rawData);
+
+    if (!validatedFields.success) {
+        const firstError = validatedFields.error.issues[0]?.message;
+        throw new Error(firstError || 'Configurações inválidas.');
+    }
+
+    const { apiUrl, instanceName, apiKey, enabled } = validatedFields.data;
 
     try {
         await prisma.establishment.update({
@@ -36,9 +46,18 @@ export async function updateBusinessHours(hours: { day_of_week: number, open_tim
     const tenantId = await getEstablishmentId()
     if (!tenantId) throw new Error('Não autorizado.')
 
+    const validatedFields = businessHoursArraySchema.safeParse(hours);
+
+    if (!validatedFields.success) {
+        const firstError = validatedFields.error.issues[0]?.message;
+        throw new Error(firstError || 'Horários inválidos fornecidos.');
+    }
+
+    const validHours = validatedFields.data;
+
     try {
         await Promise.all(
-            hours.map(h =>
+            validHours.map(h =>
                 prisma.businessHour.upsert({
                     where: {
                         establishment_id_day_of_week: {
@@ -99,9 +118,17 @@ export async function updateEstablishmentProfile(formData: FormData) {
     const tenantId = await getEstablishmentId()
     if (!tenantId) throw new Error('Não autorizado.')
 
-    const name = formData.get('name') as string
+    const rawData = {
+        name: formData.get('name')
+    };
 
-    if (!name) throw new Error('Nome Fantasia é obrigatório.')
+    const validatedFields = establishmentProfileSchema.safeParse(rawData);
+
+    if (!validatedFields.success) {
+        throw new Error(validatedFields.error.issues[0]?.message || 'Nome Fantasia inválido.');
+    }
+
+    const { name } = validatedFields.data;
 
     try {
         await prisma.establishment.update({
@@ -121,20 +148,18 @@ export async function updateEstablishmentSlug(newSlug: string) {
     const tenantId = await getEstablishmentId()
     if (!tenantId) throw new Error('Não autorizado.')
 
-    if (!newSlug || newSlug.trim() === '') {
-        throw new Error('O link (slug) não pode estar vazio.')
+    const validatedFields = establishmentSlugSchema.safeParse({ slug: newSlug });
+
+    if (!validatedFields.success) {
+        throw new Error(validatedFields.error.issues[0]?.message || 'Slug inválido.');
     }
 
-    // Valida o formato do slug (apenas letras minúsculas, números e hífens)
-    const slugRegex = /^[a-z0-9-]+$/
-    if (!slugRegex.test(newSlug)) {
-        throw new Error('O link deve conter apenas letras minúsculas, números e hífens, sem espaços ou acentos.')
-    }
+    const { slug: validSlug } = validatedFields.data;
 
     try {
         // Verifica se o slug já existe para OUTRO estabelecimento
         const existing = await prisma.establishment.findUnique({
-            where: { slug: newSlug },
+            where: { slug: validSlug },
             select: { id: true }
         })
 
@@ -145,7 +170,7 @@ export async function updateEstablishmentSlug(newSlug: string) {
         await prisma.establishment.update({
             where: { id: tenantId },
             data: {
-                slug: newSlug
+                slug: validSlug
             }
         })
         revalidatePath('/settings')
