@@ -310,7 +310,17 @@ export async function createPublicAppointment(formData: FormData) {
         const result = await sendWhatsAppMessage(tenant_id, client_phone, `Olá ${client_name}! Confirmamos seu agendamento de ${appointment.service.name} com ${appointment.attendant.name} para o dia ${format(dateTime, "dd/MM 'às' HH:mm", { locale: ptBR })}. Te esperamos!`)
 
         if (!result.success) {
-            console.warn(`[WhatsApp] Falha ao enviar confirmação (não-bloqueante):`, result.reason || result.data)
+            console.warn(`[WhatsApp Client] Falha ao enviar confirmação (não-bloqueante):`, result.reason || result.data)
+        }
+
+        // Notifica o profissional (Attendant) se ele tiver um número cadastrado
+        if (appointment.attendant.phone) {
+            const attendantMsg = `📅 *Novo Agendamento!*\n\n*Serviço:* ${appointment.service.name}\n*Data:* ${format(dateTime, "dd/MM 'às' HH:mm", { locale: ptBR })}\n*Cliente:* ${client_name} (${client_phone})`
+            const attendantResult = await sendWhatsAppMessage(tenant_id, appointment.attendant.phone, attendantMsg)
+
+            if (!attendantResult.success) {
+                console.warn(`[WhatsApp Attendant] Falha ao notificar profissional (não-bloqueante):`, attendantResult.reason || attendantResult.data)
+            }
         }
     } catch (whatsappError) {
         console.warn('[WhatsApp] Erro inesperado ao enviar confirmação (não-bloqueante):', whatsappError)
