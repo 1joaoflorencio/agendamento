@@ -16,8 +16,12 @@ export default function Home() {
       {/* HEADER / NAV */}
       <nav className="relative z-10 container mx-auto px-6 py-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Image src="/images/logo.png" alt="CoreAgenda Logo" width={48} height={48} className="w-10 h-10 object-contain" />
-          <span className="font-extrabold text-2xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700">CoreAgenda</span>
+          <Image src="/images/logo.png" alt="CoreAgenda Logo" width={48} height={48} className="w-10 h-10 object-contain drop-shadow-sm" />
+          <div className="flex items-center gap-4">
+            <span className="font-extrabold text-2xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700">CoreAgenda</span>
+            <div className="hidden md:block w-px h-6 bg-slate-300"></div>
+            <span className="hidden md:block text-sm font-bold text-slate-500 tracking-wide">Sistema de Agendamento e Gestão</span>
+          </div>
         </div>
         <div className="flex items-center gap-4">
           {/* Header buttons removed as requested */}
@@ -55,13 +59,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* HERO BRAND COVER */}
-        <div className="w-full max-w-5xl mx-auto mt-20 relative animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
-          <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 blur-[80px] opacity-20 -z-10 rounded-[3rem]"></div>
-          <div className="relative bg-white/70 backdrop-blur-xl border border-white/50 shadow-2xl shadow-slate-900/10 rounded-[2rem] sm:rounded-[3rem] overflow-hidden">
-            <Image src="/images/capa.png" alt="CoreAgenda Capa" width={1024} height={558} className="w-full h-auto object-cover hover:scale-105 transition-transform duration-1000" priority />
-          </div>
-        </div>
+
 
         {/* FEATURES GRID */}
         <section className="w-full max-w-6xl mx-auto mt-32">
