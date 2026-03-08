@@ -14,7 +14,6 @@ import { cn } from "@/lib/utils"
 import { generateGoogleCalendarLink, generateIcsContent } from "@/lib/calendar"
 import type { Establishment, Service, AttendantWithServices, TimeSlot } from "@/types"
 import { toast } from "sonner"
-import { Skeleton } from "@/components/ui/skeleton"
 import { getTheme } from "@/lib/niche-themes"
 
 export default function BookingForm({ establishment }: { establishment: Establishment }) {
@@ -259,8 +258,9 @@ export default function BookingForm({ establishment }: { establishment: Establis
                                         <p className="text-slate-400 font-bold uppercase tracking-widest">Toque em uma data para ver os horários</p>
                                     </div>
                                 ) : isSlotLoading ? (
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                        {[1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="h-14 sm:h-16 w-full rounded-xl sm:rounded-2xl" />)}
+                                    <div className="flex flex-col items-center justify-center py-12">
+                                        <div className="w-12 h-12 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
+                                        <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">Carregando horários...</p>
                                     </div>
                                 ) : allSlots.length === 0 || allSlots.every(s => !s.available) ? (
                                     <div className="bg-slate-50 border-[3px] border-slate-100 rounded-[2.5rem] p-12 text-center shadow-inner mt-4">

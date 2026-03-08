@@ -58,28 +58,30 @@ export async function getAvailableTimeSlots(
     // Forçamos o timezone exato da string para não cair no dia anterior em UTC -3
     const date = new Date(`${dateStr}T00:00:00`);
 
-    // Busca estabelecimento para checar se a loja está pausada
-    const establishment = await prisma.establishment.findUnique({
-        where: { id: tenantId },
-        select: { pause_start: true, paused_until: true }
-    });
-
-    // Busca o profissional para checar se ELE está pausado especificamente
-    const attendant = await prisma.attendant.findUnique({
-        where: { id: attendantId },
-        select: { pause_start: true, paused_until: true }
-    });
-
-    // 2.2 Busca horários de funcionamento dinâmicos
     const dayOfWeek = date.getDay(); // 0 = Domingo, 1 = Segunda...
-    const businessHour = await prisma.businessHour.findUnique({
-        where: {
-            establishment_id_day_of_week: {
-                establishment_id: tenantId,
-                day_of_week: dayOfWeek
+
+    // 2.2 Run static checks concurrently
+    const [establishment, attendant, businessHour, service] = await Promise.all([
+        prisma.establishment.findUnique({
+            where: { id: tenantId },
+            select: { pause_start: true, paused_until: true }
+        }),
+        prisma.attendant.findUnique({
+            where: { id: attendantId },
+            select: { pause_start: true, paused_until: true }
+        }),
+        prisma.businessHour.findUnique({
+            where: {
+                establishment_id_day_of_week: {
+                    establishment_id: tenantId,
+                    day_of_week: dayOfWeek
+                }
             }
-        }
-    });
+        }),
+        prisma.service.findUnique({
+            where: { id: serviceId }
+        })
+    ]);
 
     let startHour = 8;
     let startMin = 0;
@@ -101,10 +103,6 @@ export async function getAvailableTimeSlots(
         endMin = m2;
     }
 
-    const service = await prisma.service.findUnique({
-        where: { id: serviceId }
-    })
-
     if (!service) throw new Error("Serviço não encontrado")
 
     const duration = service.duration_minutes
@@ -122,21 +120,21 @@ export async function getAvailableTimeSlots(
                 gte: start,
                 lte: end
             }
+        },
+        include: {
+            service: { select: { duration_minutes: true } }
         }
     })
 
     // Mapeia os intervalos de tempo ocupados
-    const blockedIntervals = await Promise.all(
-        existingAppointments.map(async (appt) => {
-            const apptService = await prisma.service.findUnique({ where: { id: appt.service_id } });
-            const apptDuration = apptService ? apptService.duration_minutes : 60; // fallback
+    const blockedIntervals = existingAppointments.map((appt) => {
+        const apptDuration = appt.service ? appt.service.duration_minutes : 60; // fallback
 
-            return {
-                start: appt.date_time,
-                end: addMinutes(appt.date_time, apptDuration)
-            }
-        })
-    )
+        return {
+            start: appt.date_time,
+            end: addMinutes(appt.date_time, apptDuration)
+        }
+    })
 
     const allSlots: { time: string; available: boolean }[] = []
 
