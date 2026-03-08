@@ -206,6 +206,13 @@ export default function Home() {
           <div className="max-w-6xl mx-auto text-center mb-12 space-y-4">
             <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mt-2">Quem testa, não volta atrás.</h2>
             <p className="text-slate-500 font-medium max-w-xl mx-auto">Feito sob medida para negócios de beleza e saúde que precisam atrair, fidelizar e multiplicar caixa.</p>
+
+            {/* Mobile Swipe Hint */}
+            <div className="flex justify-center sm:hidden pt-2">
+              <div className="inline-flex items-center gap-2 text-indigo-600 bg-indigo-50/80 px-4 py-1.5 rounded-full font-bold text-sm animate-pulse border border-indigo-100">
+                Deslize para ver avaliações <ArrowRight className="w-4 h-4" />
+              </div>
+            </div>
           </div>
 
           {/* Horizontally scrollable container with hidden scrollbar */}
