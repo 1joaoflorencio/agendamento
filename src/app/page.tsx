@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowRight, Calendar, MessageCircle, BarChart3, Smartphone, Zap, ShieldCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -15,22 +16,11 @@ export default function Home() {
       {/* HEADER / NAV */}
       <nav className="relative z-10 container mx-auto px-6 py-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 shadow-lg shadow-indigo-500/20 flex items-center justify-center text-white">
-            <Calendar className="w-5 h-5" />
-          </div>
+          <Image src="/images/logo.png" alt="CoreAgenda Logo" width={48} height={48} className="w-10 h-10 object-contain" />
           <span className="font-extrabold text-2xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700">CoreAgenda</span>
         </div>
         <div className="flex items-center gap-4">
-          <Link href="/login">
-            <Button variant="ghost" className="hidden sm:flex font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-200/50 rounded-full px-6 transition-all duration-300">
-              Sou Cliente
-            </Button>
-          </Link>
-          <Link href="/login">
-            <Button className="bg-slate-900 text-white hover:bg-slate-800 hover:scale-[1.02] active:scale-95 transition-all duration-300 font-bold rounded-full px-8 shadow-xl shadow-slate-900/10 h-12">
-              Acessar Painel <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </Link>
+          {/* Header buttons removed as requested */}
         </div>
       </nav>
 
@@ -53,73 +43,23 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <Link href="/login">
-              <Button className="w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white hover:scale-[1.03] active:scale-95 transition-all duration-300 font-extrabold rounded-full px-10 h-16 text-lg shadow-2xl shadow-indigo-600/25 border border-white/10 group">
-                Entrar no Meu Painel
-                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Button>
+            <Link href="/login" className="w-full sm:w-auto">
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full blur opacity-40 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse-slow"></div>
+                <Button className="relative w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white hover:scale-[1.03] active:scale-95 transition-all duration-300 font-extrabold rounded-full px-12 h-16 text-lg border border-white/20">
+                  Entrar no Meu Painel
+                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </div>
             </Link>
           </div>
         </section>
 
-        {/* HERO MOCKUP (GLASS COMPONENT) */}
+        {/* HERO BRAND COVER */}
         <div className="w-full max-w-5xl mx-auto mt-20 relative animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
-          {/* Glow behind mockup */}
           <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 blur-[80px] opacity-20 -z-10 rounded-[3rem]"></div>
-
-          <div className="relative bg-white/70 backdrop-blur-xl border border-white/50 shadow-2xl shadow-slate-900/10 rounded-[2rem] sm:rounded-[3rem] p-4 sm:p-6 overflow-hidden">
-            {/* Mock Header */}
-            <div className="flex items-center gap-2 mb-6 ml-2">
-              <div className="w-3 h-3 rounded-full bg-slate-300/80"></div>
-              <div className="w-3 h-3 rounded-full bg-slate-300/80"></div>
-              <div className="w-3 h-3 rounded-full bg-slate-300/80"></div>
-            </div>
-
-            {/* Mock Content */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Left Sidebar Mock */}
-              <div className="hidden md:block col-span-1 space-y-4">
-                <div className="h-12 bg-slate-100/80 rounded-2xl w-full animate-pulse"></div>
-                <div className="h-10 bg-slate-100/50 rounded-xl w-3/4"></div>
-                <div className="h-10 bg-slate-100/50 rounded-xl w-5/6"></div>
-                <div className="h-10 bg-slate-100/50 rounded-xl w-4/6"></div>
-              </div>
-              {/* Main Content Mock */}
-              <div className="col-span-1 md:col-span-2 space-y-6">
-                <div className="flex justify-between items-end">
-                  <div className="space-y-2">
-                    <div className="h-6 w-32 bg-slate-200/80 rounded-lg"></div>
-                    <div className="h-10 w-64 bg-slate-800/80 rounded-xl"></div>
-                  </div>
-                  <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center">
-                    <Calendar className="w-5 h-5 text-indigo-600" />
-                  </div>
-                </div>
-                {/* Schedule Cards Mock */}
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="h-32 bg-gradient-to-br from-indigo-50 to-white border border-indigo-100/50 rounded-3xl p-5 shadow-sm">
-                    <div className="flex justify-between">
-                      <div className="h-4 w-12 bg-indigo-200 rounded-md"></div>
-                      <div className="h-6 w-16 bg-white/80 rounded-full"></div>
-                    </div>
-                    <div className="mt-4 space-y-2">
-                      <div className="h-4 w-3/4 bg-slate-200/80 rounded-md"></div>
-                      <div className="h-3 w-1/2 bg-slate-100 rounded-md"></div>
-                    </div>
-                  </div>
-                  <div className="h-32 bg-white border border-slate-100 rounded-3xl p-5 shadow-sm">
-                    <div className="flex justify-between">
-                      <div className="h-4 w-12 bg-slate-200 rounded-md"></div>
-                      <div className="h-6 w-16 bg-slate-100 rounded-full"></div>
-                    </div>
-                    <div className="mt-4 space-y-2">
-                      <div className="h-4 w-3/4 bg-slate-200/80 rounded-md"></div>
-                      <div className="h-3 w-1/2 bg-slate-100 rounded-md"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="relative bg-white/70 backdrop-blur-xl border border-white/50 shadow-2xl shadow-slate-900/10 rounded-[2rem] sm:rounded-[3rem] overflow-hidden">
+            <Image src="/images/capa.png" alt="CoreAgenda Capa" width={1024} height={558} className="w-full h-auto object-cover hover:scale-105 transition-transform duration-1000" priority />
           </div>
         </div>
 
@@ -188,27 +128,41 @@ export default function Home() {
           </div>
         </section>
 
+        {/* FAQ SECTION */}
+        <section className="w-full max-w-4xl mx-auto mt-32">
+          <div className="text-center mb-16 space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-700">
+            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mt-2">Dúvidas Frequentes</h2>
+            <p className="text-slate-500 font-medium max-w-xl mx-auto">Tudo o que você precisa saber sobre a experiência CoreAgenda.</p>
+          </div>
+          <div className="space-y-4 text-left">
+            <div className="p-6 sm:p-8 bg-white/60 backdrop-blur-md border border-slate-200/60 rounded-[1.5rem] shadow-sm hover:shadow-md transition-shadow">
+              <h3 className="font-extrabold text-xl text-slate-900">Como faço para me cadastrar?</h3>
+              <p className="text-slate-500 mt-2 text-lg font-medium leading-relaxed">A CoreAgenda atua por modelo de licenciamento privado. Nós configuramos a máquina de vendas e entregamos o acesso gerencial pronto para o lojista. Se você já tem acesso, basta entrar no painel.</p>
+            </div>
+            <div className="p-6 sm:p-8 bg-white/60 backdrop-blur-md border border-slate-200/60 rounded-[1.5rem] shadow-sm hover:shadow-md transition-shadow">
+              <h3 className="font-extrabold text-xl text-slate-900">Meus clientes precisam de um aplicativo?</h3>
+              <p className="text-slate-500 mt-2 text-lg font-medium leading-relaxed">Não! Eles acessam seu link exclusivo com a sua identidade visual direto pelo navegador (Chrome, Safari, Instagram) em segundos.</p>
+            </div>
+            <div className="p-6 sm:p-8 bg-white/60 backdrop-blur-md border border-slate-200/60 rounded-[1.5rem] shadow-sm hover:shadow-md transition-shadow">
+              <h3 className="font-extrabold text-xl text-slate-900">Como vou ser notificado dos agendamentos?</h3>
+              <p className="text-slate-500 mt-2 text-lg font-medium leading-relaxed">Sua agenda piscará na sua tela em tempo real com acesso imediato pelo computador ou pelo seu celular, tudo centralizado no seu Controle de Fluxo.</p>
+            </div>
+          </div>
+        </section>
+
       </main>
 
       {/* FOOTER */}
       <footer className="relative bg-white border-t border-slate-200/60 pt-16 pb-8 px-6 mt-20">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-sm">
-              <Calendar className="w-4 h-4" />
-            </div>
+            <Image src="/images/logo.png" alt="CoreAgenda Logo" width={40} height={40} className="w-8 h-8 object-contain" />
             <span className="font-extrabold text-xl text-slate-900">CoreAgenda</span>
           </div>
 
-          <p className="text-slate-400 font-medium text-sm text-center">
+          <p className="text-slate-400 font-medium text-sm text-center md:text-right flex-1">
             &copy; {new Date().getFullYear()} CoreAgenda. Criado para negócios de alto nível.
           </p>
-
-          <Link href="/login">
-            <span className="text-sm font-bold text-slate-500 hover:text-indigo-600 transition-colors uppercase tracking-widest border border-slate-200 rounded-full px-6 py-2 hover:bg-slate-50 active:scale-95 inline-block">
-              Login Administrativo
-            </span>
-          </Link>
         </div>
       </footer>
 
