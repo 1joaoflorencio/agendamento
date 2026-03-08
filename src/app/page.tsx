@@ -24,10 +24,8 @@ export default function Home() {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <Link href="/login">
-            <Button className="bg-slate-900 text-white hover:bg-slate-800 hover:-translate-y-0.5 active:scale-95 transition-all duration-300 font-bold rounded-full px-6 h-10 text-sm shadow-md shadow-slate-900/10">
-              Acessar Módulo
-            </Button>
+          <Link href="/login" className="hidden">
+            Acessar Módulo
           </Link>
         </div>
       </nav>
@@ -137,7 +135,7 @@ export default function Home() {
             <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mt-2">Escolha trabalhar em paz.</h2>
             <p className="text-slate-500 font-medium max-w-xl mx-auto">Deixe o trabalho robótico para os sistemas. O seu tempo deve ser focado em escalar sua empresa.</p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
             {/* The Chaos */}
             <div className="bg-red-50/50 border border-red-100 rounded-[2rem] p-8 sm:p-10 opacity-70 hover:opacity-100 transition-opacity">
@@ -211,121 +209,121 @@ export default function Home() {
           </div>
 
           {/* Horizontally scrollable container with hidden scrollbar */}
-          <div className="flex overflow-x-auto gap-6 pb-12 snap-x snap-mandatory hide-scrollbar pl-4 md:pl-[max(1rem,calc((100vw-1152px)/2))] pr-8 py-4">
-            
+          <div className="flex overflow-x-auto gap-4 sm:gap-6 pb-12 snap-x snap-mandatory hide-scrollbar pl-4 md:pl-[max(1rem,calc((100vw-1152px)/2))] pr-8 py-4">
+
             {/* Review 1: Barbearia */}
-            <div className="min-w-[320px] max-w-[400px] shrink-0 snap-center bg-slate-900 border border-slate-800 rounded-[2rem] p-8 shadow-xl relative text-white translate-y-0 hover:-translate-y-2 transition-transform duration-300">
+            <div className="w-[85vw] sm:min-w-[320px] max-w-[400px] shrink-0 snap-center bg-slate-900 border border-slate-800 rounded-[2rem] p-6 sm:p-8 shadow-xl relative text-white translate-y-0 hover:-translate-y-2 transition-transform duration-300">
               <Quote className="absolute top-6 right-6 w-8 h-8 text-slate-700" />
               <div className="flex gap-1 mb-6 text-amber-400">
                 <Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" />
               </div>
-              <p className="text-slate-300 font-medium leading-relaxed mb-8">
+              <p className="text-slate-300 font-medium leading-relaxed mb-8 text-sm sm:text-base">
                 "O design é ridículo de bom. Meus clientes de alto padrão da barbearia vivem elogiando, acham que eu mandei fazer um app de meio milhão de reais só pra eles. Todo negócio que cobra um ticket alto precisa ter isso na bio do Instagram."
               </p>
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center font-bold text-white shadow-inner">TH</div>
+                <div className="w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center font-bold text-white shadow-inner shrink-0">TH</div>
                 <div>
-                  <h4 className="font-bold text-white">Thiago H.</h4>
-                  <p className="text-sm text-indigo-300">Barbearia Premium</p>
+                  <h4 className="font-bold text-white text-sm sm:text-base">Thiago H.</h4>
+                  <p className="text-xs sm:text-sm text-indigo-300">Barbearia Premium</p>
                 </div>
               </div>
             </div>
 
             {/* Review 2: Salão de Beleza */}
-            <div className="min-w-[320px] max-w-[400px] shrink-0 snap-center bg-white border border-slate-200/60 rounded-[2rem] p-8 shadow-sm relative hover:-translate-y-2 transition-transform duration-300 opacity-95 hover:opacity-100">
+            <div className="w-[85vw] sm:min-w-[320px] max-w-[400px] shrink-0 snap-center bg-white border border-slate-200/60 rounded-[2rem] p-6 sm:p-8 shadow-sm relative hover:-translate-y-2 transition-transform duration-300 opacity-95 hover:opacity-100">
               <Quote className="absolute top-6 right-6 w-8 h-8 text-indigo-50" />
               <div className="flex gap-1 mb-6 text-amber-400">
                 <Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" />
               </div>
-              <p className="text-slate-700 font-medium leading-relaxed mb-8">
+              <p className="text-slate-700 font-medium leading-relaxed mb-8 text-sm sm:text-base">
                 "Antes minha recepção passava 4 horas por dia só tentando encaixar horário na agenda de papel e confirmando se a cliente vinha. A CoreAgenda colocou o salão no automático. A cliente marca sozinha de madrugada e o robô cobra de manhã."
               </p>
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-rose-100 rounded-full flex items-center justify-center font-bold text-rose-600">CS</div>
+                <div className="w-12 h-12 bg-rose-100 rounded-full flex items-center justify-center font-bold text-rose-600 shrink-0">CS</div>
                 <div>
-                  <h4 className="font-bold text-slate-900">Camila Silva</h4>
-                  <p className="text-sm text-slate-500">Salão & Estética</p>
+                  <h4 className="font-bold text-slate-900 text-sm sm:text-base">Camila Silva</h4>
+                  <p className="text-xs sm:text-sm text-slate-500">Salão & Estética</p>
                 </div>
               </div>
             </div>
 
             {/* Review 3: Clínica Odonto */}
-            <div className="min-w-[320px] max-w-[400px] shrink-0 snap-center bg-white border border-slate-200/60 rounded-[2rem] p-8 shadow-sm relative hover:-translate-y-2 transition-transform duration-300 opacity-95 hover:opacity-100">
+            <div className="w-[85vw] sm:min-w-[320px] max-w-[400px] shrink-0 snap-center bg-white border border-slate-200/60 rounded-[2rem] p-6 sm:p-8 shadow-sm relative hover:-translate-y-2 transition-transform duration-300 opacity-95 hover:opacity-100">
               <Quote className="absolute top-6 right-6 w-8 h-8 text-indigo-50" />
               <div className="flex gap-1 mb-6 text-amber-400">
                 <Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" />
               </div>
-              <p className="text-slate-700 font-medium leading-relaxed mb-8">
+              <p className="text-slate-700 font-medium leading-relaxed mb-8 text-sm sm:text-base">
                 "Só de instalar e avisar o pessoal no Instagram, minhas madrugadas ficaram livres. O número de pacientes que furavam a consulta caiu absurdamente por causa do lembrete automático, o que pagou o sistema no primeiro dia do mês."
               </p>
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-sky-100 rounded-full flex items-center justify-center font-bold text-sky-600">MR</div>
+                <div className="w-12 h-12 bg-sky-100 rounded-full flex items-center justify-center font-bold text-sky-600 shrink-0">MR</div>
                 <div>
-                  <h4 className="font-bold text-slate-900">Dr. Mateus R.</h4>
-                  <p className="text-sm text-slate-500">Clínica Odontológica</p>
+                  <h4 className="font-bold text-slate-900 text-sm sm:text-base">Dr. Mateus R.</h4>
+                  <p className="text-xs sm:text-sm text-slate-500">Clínica Odontológica</p>
                 </div>
               </div>
             </div>
 
             {/* Review 4: Barbearia Clássica */}
-            <div className="min-w-[320px] max-w-[400px] shrink-0 snap-center bg-white border border-slate-200/60 rounded-[2rem] p-8 shadow-sm relative hover:-translate-y-2 transition-transform duration-300 opacity-95 hover:opacity-100">
+            <div className="w-[85vw] sm:min-w-[320px] max-w-[400px] shrink-0 snap-center bg-white border border-slate-200/60 rounded-[2rem] p-6 sm:p-8 shadow-sm relative hover:-translate-y-2 transition-transform duration-300 opacity-95 hover:opacity-100">
               <Quote className="absolute top-6 right-6 w-8 h-8 text-indigo-50" />
               <div className="flex gap-1 mb-6 text-amber-400">
                 <Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" />
               </div>
-              <p className="text-slate-700 font-medium leading-relaxed mb-8">
+              <p className="text-slate-700 font-medium leading-relaxed mb-8 text-sm sm:text-base">
                 "Cara, eu tinha 3 barbeiros e o controle de comissão era no caderno. Dava briga toda semana. Ter as métricas de retenção e faturamento no painel da gerência limpou todo o stress financeiro daqui de dentro. Sistema absurdamente liso."
               </p>
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-slate-200 rounded-full flex items-center justify-center font-bold text-slate-600">PB</div>
+                <div className="w-12 h-12 bg-slate-200 rounded-full flex items-center justify-center font-bold text-slate-600 shrink-0">PB</div>
                 <div>
-                  <h4 className="font-bold text-slate-900">Pedro B.</h4>
-                  <p className="text-sm text-slate-500">Barber Club</p>
+                  <h4 className="font-bold text-slate-900 text-sm sm:text-base">Pedro B.</h4>
+                  <p className="text-xs sm:text-sm text-slate-500">Barber Club</p>
                 </div>
               </div>
             </div>
 
             {/* Review 5: Clínica Dermatológica */}
-            <div className="min-w-[320px] max-w-[400px] shrink-0 snap-center bg-white border border-slate-200/60 rounded-[2rem] p-8 shadow-sm relative hover:-translate-y-2 transition-transform duration-300 opacity-95 hover:opacity-100">
+            <div className="w-[85vw] sm:min-w-[320px] max-w-[400px] shrink-0 snap-center bg-white border border-slate-200/60 rounded-[2rem] p-6 sm:p-8 shadow-sm relative hover:-translate-y-2 transition-transform duration-300 opacity-95 hover:opacity-100">
               <Quote className="absolute top-6 right-6 w-8 h-8 text-indigo-50" />
               <div className="flex gap-1 mb-6 text-amber-400">
                 <Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" />
               </div>
-              <p className="text-slate-700 font-medium leading-relaxed mb-8">
+              <p className="text-slate-700 font-medium leading-relaxed mb-8 text-sm sm:text-base">
                 "Fui de um sistema engessado dos anos 2000 direto pra CoreAgenda. A reação das minhas pacientes quando viram o link com a logomarca da clínica nas cores que escolhi foi surreal. Passa uma autoridade clínica gigante."
               </p>
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center font-bold text-emerald-600">DA</div>
+                <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center font-bold text-emerald-600 shrink-0">DA</div>
                 <div>
-                  <h4 className="font-bold text-slate-900">Dra. Amanda C.</h4>
-                  <p className="text-sm text-slate-500">Dermatologia Avançada</p>
+                  <h4 className="font-bold text-slate-900 text-sm sm:text-base">Dra. Amanda C.</h4>
+                  <p className="text-xs sm:text-sm text-slate-500">Dermatologia Avançada</p>
                 </div>
               </div>
             </div>
 
             {/* Review 6: Esmalteria */}
-            <div className="min-w-[320px] max-w-[400px] shrink-0 snap-center bg-white border border-slate-200/60 rounded-[2rem] p-8 shadow-sm relative hover:-translate-y-2 transition-transform duration-300 opacity-95 hover:opacity-100">
+            <div className="w-[85vw] sm:min-w-[320px] max-w-[400px] shrink-0 snap-center bg-white border border-slate-200/60 rounded-[2rem] p-6 sm:p-8 shadow-sm relative hover:-translate-y-2 transition-transform duration-300 opacity-95 hover:opacity-100">
               <Quote className="absolute top-6 right-6 w-8 h-8 text-indigo-50" />
               <div className="flex gap-1 mb-6 text-amber-400">
                 <Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" />
               </div>
-              <p className="text-slate-700 font-medium leading-relaxed mb-8">
+              <p className="text-slate-700 font-medium leading-relaxed mb-8 text-sm sm:text-base">
                 "Esmalteria é correria. Emendar um serviço no outro o tempo inteiro! Eu literalmente mandei o link pro grupo VIP das clientes da semana, e a agenda encheu sozinha. Ninguém precisou perguntar de preço, tava lá, tudo no cardápio de serviços."
               </p>
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center font-bold text-purple-600">JP</div>
+                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center font-bold text-purple-600 shrink-0">JP</div>
                 <div>
-                  <h4 className="font-bold text-slate-900">Juliana P.</h4>
-                  <p className="text-sm text-slate-500">Nail Designer</p>
+                  <h4 className="font-bold text-slate-900 text-sm sm:text-base">Juliana P.</h4>
+                  <p className="text-xs sm:text-sm text-slate-500">Nail Designer</p>
                 </div>
               </div>
             </div>
-            
+
             {/* Scroll Indication Card (End) */}
             <div className="min-w-[120px] shrink-0 flex items-center justify-center pt-8">
-               <div className="text-slate-400 text-sm font-medium flex items-center gap-2 rotate-90 whitespace-nowrap bg-white/50 px-4 py-2 rounded-full shadow-sm">
-                 Deslize para o lado <ArrowRight className="w-4 h-4 ml-1" />
-               </div>
+              <div className="text-slate-400 text-sm font-medium flex items-center gap-2 rotate-90 whitespace-nowrap bg-white/50 px-4 py-2 rounded-full shadow-sm">
+                Deslize para o lado <ArrowRight className="w-4 h-4 ml-1" />
+              </div>
             </div>
 
           </div>
