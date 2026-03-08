@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { createAttendant } from './actions'
-import { Clock, Scissors, Plus, Trash2, Edit2, Pencil, StopCircle, PlayCircle, Loader2, UserPlus, CheckCircle2 } from 'lucide-react'
+import { UserPlus, CheckCircle2 } from 'lucide-react'
 import { NichePlaceholders } from '@/lib/niche-themes'
 import { toast } from 'sonner'
 

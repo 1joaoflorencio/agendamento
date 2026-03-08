@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, Calendar, MessageCircle, BarChart3, Smartphone, Zap, ShieldCheck, CheckCircle2, XCircle, Star, StarHalf, Quote } from 'lucide-react'
+import { ArrowRight, MessageCircle, BarChart3, Smartphone, Zap, ShieldCheck, CheckCircle2, XCircle, Star, StarHalf, Quote } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export default function Home() {
@@ -152,7 +152,7 @@ export default function Home() {
                 </li>
                 <li className="flex gap-3 text-slate-600 font-medium">
                   <XCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
-                  <span>Interrupções toda hora via WhatsApp perguntando "Tem vaga de tarde?".</span>
+                  <span>Interrupções toda hora via WhatsApp perguntando &quot;Tem vaga de tarde?&quot;.</span>
                 </li>
                 <li className="flex gap-3 text-slate-600 font-medium">
                   <XCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
@@ -225,7 +225,7 @@ export default function Home() {
                 <Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" />
               </div>
               <p className="text-slate-300 font-medium leading-relaxed mb-8 text-sm sm:text-base">
-                "Cara, o sistema é liso demais. A galera curtiu bastante o link personalizado com a logo da barbearia, passa uma moral foda, parece app de 100 mil reais. Única coisa, queria que o cliente já pagasse no link tbm rs, mas pro agendamento tá perfeito."
+                &quot;Cara, o sistema é liso demais. A galera curtiu bastante o link personalizado com a logo da barbearia, passa uma moral foda, parece app de 100 mil reais. Única coisa, queria que o cliente já pagasse no link tbm rs, mas pro agendamento tá perfeito.&quot;
               </p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center font-bold text-white shadow-inner shrink-0">TH</div>
@@ -243,7 +243,7 @@ export default function Home() {
                 <Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><StarHalf className="w-5 h-5 fill-current" />
               </div>
               <p className="text-slate-700 font-medium leading-relaxed mb-8 text-sm sm:text-base">
-                "Menina, me salvou de um burnout real oficial kkkk. Chegava num ponto que eu não aguentava mais responder mensagem 8 da noite perguntando 'tem horário amanhã?'. Agora eu só jogo o link no Insta e a agenda enche sozinha de madrugada."
+                &quot;Menina, me salvou de um burnout real oficial kkkk. Chegava num ponto que eu não aguentava mais responder mensagem 8 da noite perguntando &apos;tem horário amanhã?&apos;. Agora eu só jogo o link no Insta e a agenda enche sozinha de madrugada.&quot;
               </p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-rose-100 rounded-full flex items-center justify-center font-bold text-rose-600 shrink-0">CS</div>
@@ -261,7 +261,7 @@ export default function Home() {
                 <Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" />
               </div>
               <p className="text-slate-700 font-medium leading-relaxed mb-8 text-sm sm:text-base">
-                "Muito prático. A função do robô mandar o WhatsApp 1h antes pros pacientes confirmando quase que zerou as faltas aqui na clínica. Tinha dia que 3 furavam e eu ficava com a sala parada dando prejuízo... Valeu cada centavo."
+                &quot;Muito prático. A função do robô mandar o WhatsApp 1h antes pros pacientes confirmando quase que zerou as faltas aqui na clínica. Tinha dia que 3 furavam e eu ficava com a sala parada dando prejuízo... Valeu cada centavo.&quot;
               </p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-sky-100 rounded-full flex items-center justify-center font-bold text-sky-600 shrink-0">MR</div>
@@ -279,7 +279,7 @@ export default function Home() {
                 <Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><StarHalf className="w-5 h-5 fill-current" />
               </div>
               <p className="text-slate-700 font-medium leading-relaxed mb-8 text-sm sm:text-base">
-                "Antes dava uma confusão do caramba pra fechar a comissão dos moleques no final do mês. Era papelzinho pra todo lado, um inferno. Agora eu abro o painel e já tá tudo calculado no centavo. Recomendo muito."
+                &quot;Antes dava uma confusão do caramba pra fechar a comissão dos moleques no final do mês. Era papelzinho pra todo lado, um inferno. Agora eu abro o painel e já tá tudo calculado no centavo. Recomendo muito.&quot;
               </p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-slate-200 rounded-full flex items-center justify-center font-bold text-slate-600 shrink-0">PB</div>
@@ -297,7 +297,7 @@ export default function Home() {
                 <Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" />
               </div>
               <p className="text-slate-700 font-medium leading-relaxed mb-8 text-sm sm:text-base">
-                "Fui de um sistema engessado dos anos 2000 direto pra CoreAgenda. A reação das minhas pacientes quando viram o visual com a logomarca da clínica nas cores que eu escolhi... surreal rs! Passa uma autoridade clínica gigante que não tem preço."
+                &quot;Fui de um sistema engessado dos anos 2000 direto pra CoreAgenda. A reação das minhas pacientes quando viram o visual com a logomarca da clínica nas cores que eu escolhi... surreal rs! Passa uma autoridade clínica gigante que não tem preço.&quot;
               </p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center font-bold text-emerald-600 shrink-0">DA</div>
@@ -315,7 +315,7 @@ export default function Home() {
                 <Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" />
               </div>
               <p className="text-slate-700 font-medium leading-relaxed mb-8 text-sm sm:text-base">
-                "Esmalteria é correria pura! Emendar um serviço no outro o tempo inteiro com os alicates na mão. Mandei o link pro grupo VIP das unhas, e a agenda encheu sozinha. Ninguém precisou perguntar de preço, tava tudo lá machigadinho."
+                &quot;Esmalteria é correria pura! Emendar um serviço no outro o tempo inteiro com os alicates na mão. Mandei o link pro grupo VIP das unhas, e a agenda encheu sozinha. Ninguém precisou perguntar de preço, tava tudo lá machigadinho.&quot;
               </p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center font-bold text-purple-600 shrink-0">JP</div>

@@ -1,7 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import prisma from '@/lib/prisma'
-import { Calendar, Phone, User as UserIcon, Clock } from 'lucide-react'
+import { Phone, User as UserIcon } from 'lucide-react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import ClientDetailsDialog from './ClientDetailsDialog'

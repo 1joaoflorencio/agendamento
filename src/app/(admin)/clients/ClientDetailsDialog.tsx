@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Phone, Mail, Clock, CalendarDays, Contact, CheckCircle, Save, Loader2, User } from 'lucide-react'
+import { Phone, Mail, Clock, CalendarDays, Contact, CheckCircle, Save, Loader2 } from 'lucide-react'
 import { format, isFuture } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { useRouter } from 'next/navigation'
@@ -49,7 +49,7 @@ export default function ClientDetailsDialog({
                 await updateClientNotes(client.id, notes)
                 toast.success('Anotações salvas com sucesso!')
                 router.refresh()
-            } catch (error) {
+            } catch {
                 toast.error('Erro ao salvar anotações.')
             }
         })
