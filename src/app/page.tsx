@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, Calendar, MessageCircle, BarChart3, Smartphone, Zap, ShieldCheck, CheckCircle2, XCircle, Star, Quote } from 'lucide-react'
+import { ArrowRight, Calendar, MessageCircle, BarChart3, Smartphone, Zap, ShieldCheck, CheckCircle2, XCircle, Star, StarHalf, Quote } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export default function Home() {
@@ -225,7 +225,7 @@ export default function Home() {
                 <Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" />
               </div>
               <p className="text-slate-300 font-medium leading-relaxed mb-8 text-sm sm:text-base">
-                "O design é ridículo de bom. Meus clientes de alto padrão da barbearia vivem elogiando, acham que eu mandei fazer um app de meio milhão de reais só pra eles. Todo negócio que cobra um ticket alto precisa ter isso na bio do Instagram."
+                "Cara, o sistema é liso demais. A galera curtiu bastante o link personalizado com a logo da barbearia, passa uma moral foda, parece app de 100 mil reais. Única coisa, queria que o cliente já pagasse no link tbm rs, mas pro agendamento tá perfeito."
               </p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center font-bold text-white shadow-inner shrink-0">TH</div>
@@ -240,10 +240,10 @@ export default function Home() {
             <div className="w-[85vw] sm:min-w-[320px] max-w-[400px] shrink-0 snap-center bg-white border border-slate-200/60 rounded-[2rem] p-6 sm:p-8 shadow-sm relative hover:-translate-y-2 transition-transform duration-300 opacity-95 hover:opacity-100">
               <Quote className="absolute top-6 right-6 w-8 h-8 text-indigo-50" />
               <div className="flex gap-1 mb-6 text-amber-400">
-                <Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" />
+                <Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><StarHalf className="w-5 h-5 fill-current" />
               </div>
               <p className="text-slate-700 font-medium leading-relaxed mb-8 text-sm sm:text-base">
-                "Antes minha recepção passava 4 horas por dia só tentando encaixar horário na agenda de papel e confirmando se a cliente vinha. A CoreAgenda colocou o salão no automático. A cliente marca sozinha de madrugada e o robô cobra de manhã."
+                "Menina, me salvou de um burnout real oficial kkkk. Chegava num ponto que eu não aguentava mais responder mensagem 8 da noite perguntando 'tem horário amanhã?'. Agora eu só jogo o link no Insta e a agenda enche sozinha de madrugada."
               </p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-rose-100 rounded-full flex items-center justify-center font-bold text-rose-600 shrink-0">CS</div>
@@ -261,7 +261,7 @@ export default function Home() {
                 <Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" />
               </div>
               <p className="text-slate-700 font-medium leading-relaxed mb-8 text-sm sm:text-base">
-                "Só de instalar e avisar o pessoal no Instagram, minhas madrugadas ficaram livres. O número de pacientes que furavam a consulta caiu absurdamente por causa do lembrete automático, o que pagou o sistema no primeiro dia do mês."
+                "Muito prático. A função do robô mandar o WhatsApp 1h antes pros pacientes confirmando quase que zerou as faltas aqui na clínica. Tinha dia que 3 furavam e eu ficava com a sala parada dando prejuízo... Valeu cada centavo."
               </p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-sky-100 rounded-full flex items-center justify-center font-bold text-sky-600 shrink-0">MR</div>
@@ -276,10 +276,10 @@ export default function Home() {
             <div className="w-[85vw] sm:min-w-[320px] max-w-[400px] shrink-0 snap-center bg-white border border-slate-200/60 rounded-[2rem] p-6 sm:p-8 shadow-sm relative hover:-translate-y-2 transition-transform duration-300 opacity-95 hover:opacity-100">
               <Quote className="absolute top-6 right-6 w-8 h-8 text-indigo-50" />
               <div className="flex gap-1 mb-6 text-amber-400">
-                <Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" />
+                <Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><StarHalf className="w-5 h-5 fill-current" />
               </div>
               <p className="text-slate-700 font-medium leading-relaxed mb-8 text-sm sm:text-base">
-                "Cara, eu tinha 3 barbeiros e o controle de comissão era no caderno. Dava briga toda semana. Ter as métricas de retenção e faturamento no painel da gerência limpou todo o stress financeiro daqui de dentro. Sistema absurdamente liso."
+                "Antes dava uma confusão do caramba pra fechar a comissão dos moleques no final do mês. Era papelzinho pra todo lado, um inferno. Agora eu abro o painel e já tá tudo calculado no centavo. Recomendo muito."
               </p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-slate-200 rounded-full flex items-center justify-center font-bold text-slate-600 shrink-0">PB</div>
@@ -297,7 +297,7 @@ export default function Home() {
                 <Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" />
               </div>
               <p className="text-slate-700 font-medium leading-relaxed mb-8 text-sm sm:text-base">
-                "Fui de um sistema engessado dos anos 2000 direto pra CoreAgenda. A reação das minhas pacientes quando viram o link com a logomarca da clínica nas cores que escolhi foi surreal. Passa uma autoridade clínica gigante."
+                "Fui de um sistema engessado dos anos 2000 direto pra CoreAgenda. A reação das minhas pacientes quando viram o visual com a logomarca da clínica nas cores que eu escolhi... surreal rs! Passa uma autoridade clínica gigante que não tem preço."
               </p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center font-bold text-emerald-600 shrink-0">DA</div>
@@ -315,7 +315,7 @@ export default function Home() {
                 <Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" /><Star className="w-5 h-5 fill-current" />
               </div>
               <p className="text-slate-700 font-medium leading-relaxed mb-8 text-sm sm:text-base">
-                "Esmalteria é correria. Emendar um serviço no outro o tempo inteiro! Eu literalmente mandei o link pro grupo VIP das clientes da semana, e a agenda encheu sozinha. Ninguém precisou perguntar de preço, tava lá, tudo no cardápio de serviços."
+                "Esmalteria é correria pura! Emendar um serviço no outro o tempo inteiro com os alicates na mão. Mandei o link pro grupo VIP das unhas, e a agenda encheu sozinha. Ninguém precisou perguntar de preço, tava tudo lá machigadinho."
               </p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center font-bold text-purple-600 shrink-0">JP</div>
