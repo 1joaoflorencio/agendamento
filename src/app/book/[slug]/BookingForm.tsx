@@ -40,9 +40,20 @@ export default function BookingForm({ establishment }: { establishment: Establis
     )
 
     // Passo 2: Profissionais (Filtrados pelo serviço ou todos se não houver vínculos)
-    const attendantsForService = establishment.attendants.filter((att: AttendantWithServices) =>
-        att.services.length === 0 || att.services.some(s => s.service_id === selectedService?.id)
-    )
+    const attendantsForService = establishment.attendants.filter((att: AttendantWithServices) => {
+        // Verifica se este serviço específico tem ALGUM profissional atrelado a ele
+        const serviceHasSpecificAttendants = establishment.attendants.some(
+            a => a.services.some(s => s.service_id === selectedService?.id)
+        );
+
+        if (serviceHasSpecificAttendants) {
+            // Se o serviço tem responsáveis, filtre apenas quem o realiza
+            return att.services.some(s => s.service_id === selectedService?.id);
+        } else {
+            // Se não há ninguém atrelado ao serviço (Nenhum selecionado = Todos), mostra todo mundo
+            return true;
+        }
+    })
 
     const handleServiceSelect = (service: Service) => {
         setSelectedService(service)
