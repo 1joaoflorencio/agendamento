@@ -23,6 +23,7 @@ interface EvolutionWebhookPayload {
         remoteJid?: string;
         fromMe?: boolean;
     };
+    sender?: string; // The real phone number at the root payload (e.g. 5511999999999@s.whatsapp.net)
 }
 
 export async function POST(req: Request) {
@@ -57,8 +58,10 @@ export async function POST(req: Request) {
             return NextResponse.json({ received: true, reason: 'missing_data' })
         }
 
-        // Isolate phone number from remoteJid (e.g., 5511999999999@s.whatsapp.net)
-        const senderPhone = remoteJid.split('@')[0]
+        // Isolate phone number from the root `sender` field (usually formatting correctly as 5511999999@s.whatsapp.net),
+        // or fallback to the remoteJid if sender is not provided.
+        const rawPhone = body.sender || remoteJid;
+        const senderPhone = rawPhone.split('@')[0]
         const instanceName = body.instance
 
         if (!senderPhone || !instanceName) {
