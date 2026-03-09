@@ -100,7 +100,7 @@ export default async function ServicesPage() {
                                                 <div className="flex items-center gap-2 mt-1.5 sm:mt-3">
                                                     <span className="text-xs sm:text-base font-black text-slate-800">
                                                         {item.hide_price ? (
-                                                            <span>A Combinar</span>
+                                                            <span>Preço a Combinar</span>
                                                         ) : (
                                                             <>
                                                                 <span className="text-indigo-500 text-[10px] sm:text-xs">R$</span>{' '}
