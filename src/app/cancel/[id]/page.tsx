@@ -82,7 +82,7 @@ export default async function CancelPage({ params }: { params: { id: string } })
                         </div>
 
                         <div className="mt-8 pt-6 border-t border-slate-100">
-                            <CancelBookingClientControls appointmentId={appointment.id} theme={theme} />
+                            <CancelBookingClientControls appointmentId={appointment.id} />
                         </div>
                     </div>
                 )}

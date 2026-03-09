@@ -5,14 +5,11 @@ import { Button } from "@/components/ui/button"
 import { AlertTriangle, Loader2 } from "lucide-react"
 import { cancelAppointment } from "./actions"
 import { toast } from "sonner"
-import { cn } from "@/lib/utils"
 
 export default function CancelBookingClientControls({
-    appointmentId,
-    theme
+    appointmentId
 }: {
     appointmentId: string
-    theme: any
 }) {
     const [isPending, startTransition] = useTransition()
     const [showConfirm, setShowConfirm] = useState(false)
