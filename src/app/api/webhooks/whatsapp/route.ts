@@ -8,14 +8,20 @@ interface EvolutionWebhookPayload {
     event: string;
     instance: string; // whatsapp_instance_name
     data: {
-        message: {
+        key?: {
             remoteJid: string; // The sender phone
             fromMe: boolean;   // If true, the bot sent it
+            id?: string;
+        };
+        message?: {
             conversation?: string;
             extendedTextMessage?: {
                 text: string;
             };
         };
+        // Some older Evolution versions might nest differently, preparing a fallback
+        remoteJid?: string;
+        fromMe?: boolean;
     };
 }
 
@@ -38,14 +44,21 @@ export async function POST(req: Request) {
             return NextResponse.json({ received: true, reason: 'ignored_event' })
         }
 
-        const msgData = body.data?.message
-        if (!msgData || msgData.fromMe) {
-            // Ignore if there is no message or if the system itself sent it (prevent loops)
+        // Extract remoteJid and fromMe safely
+        const remoteJid = body.data?.key?.remoteJid || body.data?.remoteJid
+        const fromMe = body.data?.key?.fromMe ?? body.data?.fromMe ?? false
+
+        if (fromMe) {
+            // Ignore if the system itself sent it (prevent loops)
             return NextResponse.json({ received: true, reason: 'ignored_sender' })
         }
 
+        if (!remoteJid) {
+            return NextResponse.json({ received: true, reason: 'missing_data' })
+        }
+
         // Isolate phone number from remoteJid (e.g., 5511999999999@s.whatsapp.net)
-        const senderPhone = msgData.remoteJid.split('@')[0]
+        const senderPhone = remoteJid.split('@')[0]
         const instanceName = body.instance
 
         if (!senderPhone || !instanceName) {
