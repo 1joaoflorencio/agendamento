@@ -123,7 +123,12 @@ export default function BookingForm({ establishment }: { establishment: Establis
                             <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 drop-shadow-sm px-4">
                                 {establishment.name}
                             </h1>
-                            <p className="text-sm sm:text-base text-slate-500 font-medium px-6 max-w-sm mx-auto leading-relaxed">
+                            {establishment.niche === 'Clinica' && (
+                                <p className={cn("text-xs sm:text-sm uppercase tracking-[0.3em] font-black -mt-1", theme.textPrimary)}>
+                                    Saúde Estética
+                                </p>
+                            )}
+                            <p className="text-sm sm:text-base text-slate-500 font-medium px-6 max-w-sm mx-auto leading-relaxed mt-2">
                                 Selecione o serviço ideal e reserve seu horário rapidamente.
                             </p>
                         </div>
