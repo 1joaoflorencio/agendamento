@@ -50,7 +50,9 @@ export async function GET(req: Request) {
             const formattedTime = format(new Date(appt.date_time), 'HH:mm')
 
             // 1. Send to Client
-            const clientMsg = `⚠️ *Lembrete de Agendamento* ⚠️\n\nOlá ${appt.client_name}, passando para lembrar do seu horário hoje na *${appt.establishment.name}*!\n\n📅 Tratamento: ${appt.service.name}\n⏰ Horário: ${formattedTime}\n👨‍🎨 Profissional: ${appt.attendant.name}\n\nSe precisar reagendar, por favor nos avise com antecedência. Te esperamos lá!`
+            const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://coreagenda.vercel.app'
+            const cancelLink = `${appUrl}/cancel/${appt.id}`
+            const clientMsg = `⚠️ *Lembrete de Agendamento* ⚠️\n\nOlá ${appt.client_name}, passando para lembrar do seu horário hoje na *${appt.establishment.name}*!\n\n📅 Tratamento: ${appt.service.name}\n⏰ Horário: ${formattedTime}\n👨‍🎨 Profissional: ${appt.attendant.name}\n\nSe precisar reagendar, por favor nos avise com antecedência.\n\n_Para cancelar este agendamento, acesse:_\n${cancelLink}`
             const clientResult = await sendWhatsAppMessage(appt.tenant_id, appt.client_phone, clientMsg)
 
             // 2. Send to Attendant (if they have a phone number)

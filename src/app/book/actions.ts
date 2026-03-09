@@ -307,7 +307,12 @@ export async function createPublicAppointment(formData: FormData) {
 
     // Envio de WhatsApp (non-blocking: falha no WhatsApp NÃO impede o agendamento)
     try {
-        const result = await sendWhatsAppMessage(tenant_id, client_phone, `Olá ${client_name}! Confirmamos seu agendamento de ${appointment.service.name} com ${appointment.attendant.name} para o dia ${format(dateTime, "dd/MM 'às' HH:mm", { locale: ptBR })}. Te esperamos!`)
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://coreagenda.vercel.app'
+        const cancelLink = `${appUrl}/cancel/${appointment.id}`
+
+        const clientMsg = `Olá ${client_name}! Confirmamos seu agendamento de *${appointment.service.name}* com *${appointment.attendant.name}* para o dia *${format(dateTime, "dd/MM 'às' HH:mm", { locale: ptBR })}*.\n\nTe esperamos!\n\n_Para cancelar este agendamento, acesse:_\n${cancelLink}`
+
+        const result = await sendWhatsAppMessage(tenant_id, client_phone, clientMsg)
 
         if (!result.success) {
             console.warn(`[WhatsApp Client] Falha ao enviar confirmação (não-bloqueante):`, result.reason || result.data)
