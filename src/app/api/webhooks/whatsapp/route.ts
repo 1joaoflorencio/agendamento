@@ -12,6 +12,7 @@ interface EvolutionWebhookPayload {
             remoteJid: string; // The sender phone
             fromMe: boolean;   // If true, the bot sent it
             id?: string;
+            senderPn?: string; // Appears inside key block for Logical ID hidden clients
         };
         message?: {
             conversation?: string;
@@ -48,6 +49,7 @@ export async function POST(req: Request) {
         // Extract remoteJid and fromMe safely
         const remoteJid = body.data?.key?.remoteJid || body.data?.remoteJid
         const fromMe = body.data?.key?.fromMe ?? body.data?.fromMe ?? false
+        const senderPn = body.data?.key?.senderPn
 
         if (fromMe) {
             // Ignore if the system itself sent it (prevent loops)
@@ -58,9 +60,13 @@ export async function POST(req: Request) {
             return NextResponse.json({ received: true, reason: 'missing_data' })
         }
 
-        // Isolate phone number from the root `sender` field (usually formatting correctly as 5511999999@s.whatsapp.net),
-        // or fallback to the remoteJid if sender is not provided.
-        const rawPhone = body.sender || remoteJid;
+        // Determine the actual client phone number.
+        // If remoteJid uses @lid (Logical ID), the real phone number is usually enclosed within senderPn.
+        let rawPhone = remoteJid;
+        if (rawPhone.includes('@lid') && senderPn) {
+            rawPhone = senderPn;
+        }
+
         const senderPhone = rawPhone.split('@')[0]
         const instanceName = body.instance
 
