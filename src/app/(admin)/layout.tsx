@@ -3,7 +3,7 @@
 import { createClient } from '@/utils/supabase/client'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { CalendarDays, LayoutDashboard, Settings, Users, LogOut, Menu, Scissors, ChevronRight, Stethoscope, Sparkles, UserCircle } from 'lucide-react'
+import { CalendarDays, LayoutDashboard, Settings, Users, LogOut, Menu, Scissors, ChevronRight, Stethoscope, Sparkles, UserCircle, BarChart3 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
@@ -68,6 +68,7 @@ export default function AdminLayout({
         { name: 'Clientes', href: '/clients', icon: UserCircle },
         { name: 'Equipe', href: '/team', icon: Users },
         { name: 'Serviços', href: '/services', icon: Scissors },
+        { name: 'Faturamento', href: '/reports', icon: BarChart3 },
         { name: 'Configurações', href: '/settings', icon: Settings },
     ]
 
