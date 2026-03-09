@@ -18,6 +18,7 @@ export const serviceSchema = z.object({
     description: z.string().max(500, "A descrição é muito longa").optional(),
     duration: z.number().int().positive("A duração deve ser um número positivo"),
     price: z.number().nonnegative("O preço não pode ser negativo"),
+    hide_price: z.boolean().default(false),
     attendant_ids: z.array(z.string().uuid()).optional().default([]),
 });
 

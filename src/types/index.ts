@@ -25,6 +25,7 @@ export type Service = {
     description: string | null
     duration_minutes: number
     price: number
+    hide_price: boolean
 }
 
 export type Attendant = {

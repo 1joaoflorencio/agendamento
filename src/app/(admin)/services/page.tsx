@@ -99,8 +99,14 @@ export default async function ServicesPage() {
                                                 )}
                                                 <div className="flex items-center gap-2 mt-1.5 sm:mt-3">
                                                     <span className="text-xs sm:text-base font-black text-slate-800">
-                                                        <span className="text-indigo-500 text-[10px] sm:text-xs">R$</span>{' '}
-                                                        {item.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                                        {item.hide_price ? (
+                                                            <span>A Combinar</span>
+                                                        ) : (
+                                                            <>
+                                                                <span className="text-indigo-500 text-[10px] sm:text-xs">R$</span>{' '}
+                                                                {item.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                                            </>
+                                                        )}
                                                     </span>
                                                     <span className="text-slate-200">•</span>
                                                     <span className="flex items-center gap-1 text-[11px] sm:text-xs font-bold text-slate-400">

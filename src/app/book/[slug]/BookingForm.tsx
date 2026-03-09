@@ -163,7 +163,11 @@ export default function BookingForm({ establishment }: { establishment: Establis
                                             <h3 className="text-base font-black text-slate-800 leading-tight">{svc.name}</h3>
                                             {svc.description && <p className="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed mt-0.5 pr-2">{svc.description}</p>}
                                             <div className="flex items-center gap-3 mt-2">
-                                                <span className={cn("text-xs font-black px-2 py-0.5 rounded-md", theme.textPrimary, theme.bgMuted)}>{formatPrice(svc.price)}</span>
+                                                {svc.hide_price ? (
+                                                    <span className={cn("text-xs font-black px-2 py-0.5 rounded-md", theme.textPrimary, theme.bgMuted)}>A Combinar</span>
+                                                ) : (
+                                                    <span className={cn("text-xs font-black px-2 py-0.5 rounded-md", theme.textPrimary, theme.bgMuted)}>{formatPrice(svc.price)}</span>
+                                                )}
                                                 <span className="text-[11px] font-bold text-slate-400 flex items-center"><Clock className="w-3.5 h-3.5 mr-1 text-slate-300" /> {svc.duration_minutes}m</span>
                                             </div>
                                         </div>

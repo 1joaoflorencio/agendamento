@@ -16,6 +16,7 @@ interface EditServiceDialogProps {
 export default function EditServiceDialog({ service }: EditServiceDialogProps) {
     const [open, setOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [isPriceHidden, setIsPriceHidden] = useState(service.hide_price)
 
     async function handleSubmit(formData: FormData) {
         setIsLoading(true)
@@ -64,8 +65,21 @@ export default function EditServiceDialog({ service }: EditServiceDialogProps) {
                             <Input id="duration" name="duration" type="number" min="1" defaultValue={service.duration_minutes} className="h-12 sm:h-14 rounded-xl sm:rounded-2xl border-2 border-slate-50 bg-slate-50 font-bold text-slate-700 focus:border-indigo-500/50" required />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="price" className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Preço (R$)</Label>
-                            <Input id="price" name="price" type="number" step="0.01" min="0" defaultValue={service.price} className="h-12 sm:h-14 rounded-xl sm:rounded-2xl border-2 border-slate-50 bg-slate-50 font-bold text-slate-700 focus:border-indigo-500/50" required />
+                            <div className="flex items-center justify-between">
+                                <Label htmlFor="price" className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Preço (R$)</Label>
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        id={`hide-price-${service.id}`}
+                                        name="hide_price"
+                                        checked={isPriceHidden}
+                                        onChange={(e) => setIsPriceHidden(e.target.checked)}
+                                        className="w-3 h-3 rounded text-indigo-600 focus:ring-indigo-600 border-slate-300"
+                                    />
+                                    <Label htmlFor={`hide-price-${service.id}`} className="text-[10px] font-bold text-slate-500 cursor-pointer">A Combinar</Label>
+                                </div>
+                            </div>
+                            <Input id="price" name="price" type="number" step="0.01" min="0" defaultValue={service.price} disabled={isPriceHidden} className="h-12 sm:h-14 rounded-xl sm:rounded-2xl border-2 border-slate-50 bg-slate-50 font-bold text-slate-700 focus:border-indigo-500/50 disabled:opacity-50" required />
                         </div>
                     </div>
 

@@ -21,6 +21,7 @@ export default function AddServiceDialog({ attendants, placeholders: ph }: AddSe
     const [isPending, startTransition] = useTransition()
     const [success, setSuccess] = useState(false)
     const [selectedAttendants, setSelectedAttendants] = useState<string[]>([])
+    const [isPriceHidden, setIsPriceHidden] = useState(false)
 
     const toggleAttendant = (id: string) => {
         setSelectedAttendants(prev =>
@@ -41,6 +42,7 @@ export default function AddServiceDialog({ attendants, placeholders: ph }: AddSe
                     setOpen(false)
                     setSuccess(false)
                     setSelectedAttendants([])
+                    setIsPriceHidden(false)
                 }, 1500)
             } catch (error) {
                 toast.error((error as Error).message || 'Erro ao criar serviço.')
@@ -49,7 +51,7 @@ export default function AddServiceDialog({ attendants, placeholders: ph }: AddSe
     }
 
     return (
-        <Dialog open={open} onOpenChange={(isOpen) => { setOpen(isOpen); if (!isOpen) { setSuccess(false); setSelectedAttendants([]) } }}>
+        <Dialog open={open} onOpenChange={(isOpen) => { setOpen(isOpen); if (!isOpen) { setSuccess(false); setSelectedAttendants([]); setIsPriceHidden(false); } }}>
             <DialogTrigger asChild>
                 <Button className="h-12 sm:h-14 px-6 sm:px-10 rounded-2xl sm:rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-black shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2 text-sm w-full sm:w-auto">
                     Novo Serviço <Plus className="h-5 w-5 ml-1" />
@@ -87,8 +89,21 @@ export default function AddServiceDialog({ attendants, placeholders: ph }: AddSe
                                     <Input id="svc-dur" name="duration" type="number" min="1" placeholder={ph.serviceDuration} className="h-12 sm:h-14 rounded-xl sm:rounded-2xl border-2 border-slate-50 bg-slate-50 font-bold text-slate-700 focus:border-indigo-500/50" required />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="svc-price" className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Preço (R$)</Label>
-                                    <Input id="svc-price" name="price" type="number" step="0.01" min="0" placeholder={ph.servicePrice} className="h-12 sm:h-14 rounded-xl sm:rounded-2xl border-2 border-slate-50 bg-slate-50 font-bold text-slate-700 focus:border-indigo-500/50" required />
+                                    <div className="flex items-center justify-between">
+                                        <Label htmlFor="svc-price" className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Preço (R$)</Label>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                id="hide-price"
+                                                name="hide_price"
+                                                checked={isPriceHidden}
+                                                onChange={(e) => setIsPriceHidden(e.target.checked)}
+                                                className="w-3 h-3 rounded text-indigo-600 focus:ring-indigo-600 border-slate-300"
+                                            />
+                                            <Label htmlFor="hide-price" className="text-[10px] font-bold text-slate-500 cursor-pointer">A Combinar</Label>
+                                        </div>
+                                    </div>
+                                    <Input id="svc-price" name="price" type="number" step="0.01" min="0" placeholder={ph.servicePrice} defaultValue="0" disabled={isPriceHidden} className="h-12 sm:h-14 rounded-xl sm:rounded-2xl border-2 border-slate-50 bg-slate-50 font-bold text-slate-700 focus:border-indigo-500/50 disabled:opacity-50" required />
                                 </div>
                             </div>
 

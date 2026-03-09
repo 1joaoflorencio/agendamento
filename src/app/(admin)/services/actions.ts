@@ -13,7 +13,8 @@ export async function createService(formData: FormData) {
         name: formData.get('name'),
         description: formData.get('description'),
         duration: parseInt(formData.get('duration') as string, 10),
-        price: parseFloat(formData.get('price') as string),
+        price: formData.get('price') ? parseFloat(formData.get('price') as string) : 0,
+        hide_price: formData.get('hide_price') === 'on' || formData.get('hide_price') === 'true',
         attendant_ids: formData.getAll('attendant_ids'),
     };
 
@@ -24,7 +25,7 @@ export async function createService(formData: FormData) {
         throw new Error(firstError || 'Campos obrigatórios inválidos.');
     }
 
-    const { name, description, duration, price, attendant_ids } = validatedFields.data;
+    const { name, description, duration, price, hide_price, attendant_ids } = validatedFields.data;
 
     try {
         const service = await prisma.service.create({
@@ -34,6 +35,7 @@ export async function createService(formData: FormData) {
                 description: description || null,
                 duration_minutes: duration,
                 price,
+                hide_price,
                 ...(attendant_ids && attendant_ids.length > 0 ? {
                     attendants: {
                         create: attendant_ids.map(id => ({
@@ -80,7 +82,8 @@ export async function updateService(formData: FormData) {
         name: formData.get('name'),
         description: formData.get('description'),
         duration: parseInt(formData.get('duration') as string, 10),
-        price: parseFloat(formData.get('price') as string),
+        price: formData.get('price') ? parseFloat(formData.get('price') as string) : 0,
+        hide_price: formData.get('hide_price') === 'on' || formData.get('hide_price') === 'true',
     };
 
     const validatedFields = serviceUpdateSchema.safeParse(rawData);
@@ -90,7 +93,7 @@ export async function updateService(formData: FormData) {
         throw new Error(firstError || 'Campos obrigatórios inválidos.');
     }
 
-    const { id, name, description, duration, price } = validatedFields.data;
+    const { id, name, description, duration, price, hide_price } = validatedFields.data;
 
     try {
         await prisma.service.update({
@@ -102,7 +105,8 @@ export async function updateService(formData: FormData) {
                 name,
                 description: description || null,
                 duration_minutes: duration,
-                price
+                price,
+                hide_price
             }
         })
         revalidatePath('/services')
