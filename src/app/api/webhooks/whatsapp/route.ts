@@ -30,9 +30,11 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json() as EvolutionWebhookPayload
+        console.log('[WhatsApp Webhook Raw Payload]', JSON.stringify(body, null, 2))
 
         // We only care about new incoming messages
         if (body.event !== 'messages.upsert') {
+            console.log(`[WhatsApp Webhook] Ignored event: ${body.event}`)
             return NextResponse.json({ received: true, reason: 'ignored_event' })
         }
 
