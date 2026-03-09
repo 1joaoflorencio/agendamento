@@ -33,9 +33,9 @@ export async function updateSession(request: NextRequest) {
 
     const isAuthRoute = request.nextUrl.pathname.startsWith('/login')
 
-    // Protect /onboarding and all /(admin) sub-routes (we'll do blanket check or regex, let's keep it simple for now and assert if there's no user, block it unless it's an auth route). Let's redirect unauthorized to /login.
+    // Protect /onboarding and all /(admin) sub-routes (we'll do blanket check or regex, let's keep it simple for now and assert if there's no user, block it unless it's an auth route, public page, or api endpoint). Let's redirect unauthorized to /login.
 
-    if (!user && !isAuthRoute && request.nextUrl.pathname !== '/' && !request.nextUrl.pathname.startsWith('/book') && !request.nextUrl.pathname.startsWith('/preview')) {
+    if (!user && !isAuthRoute && request.nextUrl.pathname !== '/' && !request.nextUrl.pathname.startsWith('/book') && !request.nextUrl.pathname.startsWith('/preview') && !request.nextUrl.pathname.startsWith('/api')) {
         const url = request.nextUrl.clone()
         url.pathname = '/login'
         return NextResponse.redirect(url)
