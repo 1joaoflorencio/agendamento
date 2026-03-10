@@ -11,6 +11,7 @@ import { EditAttendantDialog } from './EditAttendantDialog'
 import AddAttendantDialog from './AddAttendantDialog'
 import DeleteAttendantButton from './DeleteAttendantButton'
 import SearchFilter from '@/components/SearchFilter'
+import ConnectCalendarButton from './ConnectCalendarButton'
 
 export default async function TeamPage() {
     const supabase = await createClient()
@@ -75,20 +76,29 @@ export default async function TeamPage() {
 
                             {/* Info */}
                             <div className="flex-1 min-w-0">
-                                <h3 className="text-sm font-black text-slate-900 truncate">{membro.name}</h3>
+                                <div className="flex items-center gap-2">
+                                    <h3 className="text-sm font-black text-slate-900 truncate">{membro.name}</h3>
+                                    {!!membro.google_refresh_token && <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" title="Google Sync Ativo"></span>}
+                                </div>
                                 <div className="flex items-center gap-1.5 mt-0.5">
                                     <Phone className="w-3 h-3 text-slate-300 flex-shrink-0" />
                                     <span className="text-[11px] font-medium text-slate-400 truncate">{membro.phone || 'Sem telefone'}</span>
                                 </div>
                             </div>
 
+
                             {/* Actions */}
                             <div className="flex items-center gap-1 flex-shrink-0">
                                 <a href={`/dashboard?attendantId=${membro.id}`}>
-                                    <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200">
+                                    <Button variant="outline" size="icon" className="w-9 h-9 rounded-xl border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-600 shadow-sm" title="Ver Agenda">
                                         <CalendarDays className="w-4 h-4" />
                                     </Button>
                                 </a>
+                                <ConnectCalendarButton
+                                    attendantId={membro.id}
+                                    isConnected={!!membro.google_refresh_token}
+                                    className="w-9 h-9 px-0 rounded-xl"
+                                />
                                 <EditAttendantDialog attendant={membro} />
                                 <DeleteAttendantButton id={membro.id} name={membro.name} />
                             </div>
@@ -139,19 +149,25 @@ export default async function TeamPage() {
                                         <span className="text-xs font-bold text-slate-500 truncate">{membro.phone || 'Sem telefone'}</span>
                                     </div>
 
-                                    <div className="pt-3 flex items-center gap-2">
-                                        <a href={`/dashboard?attendantId=${membro.id}`} className="flex-1 min-w-0">
-                                            <Button variant="outline" className="w-full h-14 rounded-full border-2 border-slate-100 font-extrabold text-slate-600 hover:bg-slate-50 text-xs shadow-sm">
-                                                Agenda
-                                            </Button>
-                                        </a>
-                                        <EditAttendantDialog attendant={membro} />
-                                        <DeleteAttendantButton
-                                            id={membro.id}
-                                            name={membro.name}
-                                            className="w-14 h-14 rounded-full text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all flex-shrink-0"
-                                            iconSize="h-6 w-6"
+                                    <div className="pt-3 flex flex-col gap-2">
+                                        <ConnectCalendarButton
+                                            attendantId={membro.id}
+                                            isConnected={!!membro.google_refresh_token}
                                         />
+                                        <div className="flex items-center gap-2">
+                                            <a href={`/dashboard?attendantId=${membro.id}`} className="flex-1 min-w-0">
+                                                <Button variant="outline" className="w-full h-14 rounded-[1.5rem] border-2 border-slate-50 font-extrabold text-slate-600 hover:bg-slate-50 text-xs shadow-sm bg-slate-50/50">
+                                                    Agenda
+                                                </Button>
+                                            </a>
+                                            <EditAttendantDialog attendant={membro} buttonClassName="h-14 rounded-[1.5rem]" />
+                                            <DeleteAttendantButton
+                                                id={membro.id}
+                                                name={membro.name}
+                                                className="w-14 h-14 rounded-[1.5rem] text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all flex-shrink-0"
+                                                iconSize="h-5 w-5"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </CardContent>

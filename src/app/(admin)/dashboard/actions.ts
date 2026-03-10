@@ -3,6 +3,7 @@
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { getEstablishmentId } from '@/lib/auth'
+import { removeEventFromCalendar } from '@/lib/google-calendar'
 
 
 
@@ -13,6 +14,15 @@ export async function updateAppointmentStatus(id: string, status: 'SCHEDULED' | 
     }
 
     try {
+        const appointmentData = await prisma.appointment.findUnique({
+            where: { id, tenant_id: tenantId },
+            select: { attendant_id: true, google_event_id: true, status: true }
+        })
+
+        if (!appointmentData) {
+            return { success: false, error: 'Agendamento não encontrado.' }
+        }
+
         await prisma.appointment.update({
             where: {
                 id,
@@ -20,6 +30,12 @@ export async function updateAppointmentStatus(id: string, status: 'SCHEDULED' | 
             },
             data: { status }
         })
+
+        if (status === 'CANCELED' && appointmentData.status !== 'CANCELED' && appointmentData.google_event_id) {
+            removeEventFromCalendar(appointmentData.attendant_id, appointmentData.google_event_id).catch(e => {
+                console.error('[Google API Error Background Delete]', e)
+            })
+        }
 
         revalidatePath('/dashboard')
         return { success: true }

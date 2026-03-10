@@ -4,6 +4,7 @@ import prisma from '@/lib/prisma'
 import { format, isBefore, isAfter } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { sendWhatsAppMessage } from '@/lib/whatsapp'
+import { addEventToCalendar } from '@/lib/google-calendar'
 import { headers } from 'next/headers'
 import { createPublicAppointmentSchema } from '@/lib/validations'
 
@@ -303,6 +304,11 @@ export async function createPublicAppointment(formData: FormData) {
             service: true,
             attendant: true
         }
+    })
+
+    // Sincronização em Background: Google Agenda
+    addEventToCalendar(appointment.id).catch(e => {
+        console.error('[Google API Error Background Sync]', e)
     })
 
     // Envio de WhatsApp (non-blocking: falha no WhatsApp NÃO impede o agendamento)

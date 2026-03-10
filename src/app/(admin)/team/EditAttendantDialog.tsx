@@ -12,9 +12,10 @@ import { toast } from 'sonner'
 
 interface EditAttendantDialogProps {
     attendant: Attendant
+    buttonClassName?: string
 }
 
-export function EditAttendantDialog({ attendant }: EditAttendantDialogProps) {
+export function EditAttendantDialog({ attendant, buttonClassName }: EditAttendantDialogProps) {
     const [open, setOpen] = useState(false)
 
     async function handleSubmit(formData: FormData) {
@@ -31,7 +32,7 @@ export function EditAttendantDialog({ attendant }: EditAttendantDialogProps) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline" size="icon" className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-full border-2 border-slate-100 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all flex-shrink-0">
+                <Button variant="outline" size="icon" className={`w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-full border-2 border-slate-100 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all flex-shrink-0 ${buttonClassName || ''}`}>
                     <Pencil className="w-4 h-4 sm:w-5 sm:h-5" />
                 </Button>
             </DialogTrigger>
