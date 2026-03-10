@@ -52,7 +52,6 @@ export async function createTrialStore(data: {
     let authUserId: string | null = null;
     try {
         const password = Math.random().toString(36).slice(-8)
-        console.log(`[createTrialStore] Attempting to create user with email: ${data.email}`)
 
         // 1. Create User in Supabase Auth using Admin API
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
@@ -107,7 +106,6 @@ export async function createTrialStore(data: {
     } catch (e) {
         console.error('Error creating trial store:', e)
         if (authUserId) {
-            console.log(`Rolling back user creation for ${authUserId}`)
             await supabaseAdmin.auth.admin.deleteUser(authUserId)
         }
         return { error: 'Ocorreu um erro interno de conexão. Você adicionou uma nova funcionalidade recentemente? Reinicie seu servidor (npm run dev) e tente novamente.' }
@@ -139,8 +137,6 @@ export async function deleteStore(storeId: string) {
                 const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(user.id)
                 if (authError) {
                     console.error(`Erro ao deletar usuário ${user.id} do Supabase:`, authError)
-                } else {
-                    console.log(`Successfully deleted ${user.email} from Supabase Auth`)
                 }
             }
         }

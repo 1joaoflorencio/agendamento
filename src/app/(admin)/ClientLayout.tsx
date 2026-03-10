@@ -1,6 +1,5 @@
 'use client'
 
-import { createClient } from '@/utils/supabase/client'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { CalendarDays, LayoutDashboard, Settings, Users, LogOut, Menu, Scissors, ChevronRight, Stethoscope, Sparkles, UserCircle, BarChart3 } from 'lucide-react'
@@ -27,7 +26,8 @@ export default function ClientLayout({
     const establishment = initialEstablishment
 
     useEffect(() => {
-        setIsMounted(true)
+        const timer = setTimeout(() => setIsMounted(true), 0)
+        return () => clearTimeout(timer)
     }, [])
 
     const theme = getTheme(establishment?.niche)

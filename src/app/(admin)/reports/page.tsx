@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import prisma from '@/lib/prisma'
 import { getTheme } from '@/lib/niche-themes'
 import ReportsView from './ReportsView'
-import { startOfDay, subDays, startOfMonth, startOfYear, format, endOfMonth } from 'date-fns'
+import { startOfDay, subDays, startOfMonth, startOfYear, format } from 'date-fns'
 
 export default async function ReportsPage() {
     const supabase = await createClient()

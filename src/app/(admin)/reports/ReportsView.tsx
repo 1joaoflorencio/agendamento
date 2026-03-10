@@ -5,6 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { Wallet, TrendingUp, Calendar, CalendarDays } from 'lucide-react'
+import type { NicheTheme } from '@/types'
 
 type ReportData = {
     label: string
@@ -18,7 +19,7 @@ export default function ReportsView({
     yearlyData,
     totals
 }: {
-    theme: any
+    theme: NicheTheme
     weeklyData: ReportData[]
     monthlyData: ReportData[]
     yearlyData: ReportData[]
@@ -26,16 +27,15 @@ export default function ReportsView({
 }) {
     const [activeTab, setActiveTab] = useState<'week' | 'month' | 'year'>('month')
 
-    // Determine current dataset and total based on active tab
+    // Determine current dataset based on active tab
     const data = activeTab === 'week' ? weeklyData : activeTab === 'month' ? monthlyData : yearlyData
-    const currentTotal = activeTab === 'week' ? totals.week : activeTab === 'month' ? totals.month : totals.year
 
     // Extract hex color from generic tailwind classes? Since theme gives tailwind classes, we hardcode some visually pleasing colors that match the niches.
     // As a robust fallback, we use an indigo shade usually.
     let chartColor = '#6366f1' // indigo
-    if (theme.primary.includes('blue')) chartColor = '#2563eb'
-    if (theme.primary.includes('zinc')) chartColor = '#18181b'
-    if (theme.primary.includes('pink')) chartColor = '#db2777'
+    if (theme.textPrimary.includes('blue')) chartColor = '#2563eb'
+    if (theme.textPrimary.includes('zinc')) chartColor = '#18181b'
+    if (theme.textPrimary.includes('pink')) chartColor = '#db2777'
 
     return (
         <div className="space-y-6 animate-in fade-in duration-700 pb-12">
@@ -142,7 +142,8 @@ export default function ReportsView({
                                     <RechartsTooltip
                                         cursor={{ fill: '#F1F5F9' }}
                                         contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)' }}
-                                        formatter={(value: any) => [new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value), 'Faturamento']}
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                        formatter={(value: any) => [new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(value || 0)), 'Faturamento']}
                                     />
                                     <Bar
                                         dataKey="value"
@@ -175,7 +176,8 @@ export default function ReportsView({
                                     />
                                     <RechartsTooltip
                                         contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)' }}
-                                        formatter={(value: any) => [new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value), 'Faturamento']}
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                        formatter={(value: any) => [new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(value || 0)), 'Faturamento']}
                                     />
                                     <Area
                                         type="monotone"

@@ -38,11 +38,9 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json() as EvolutionWebhookPayload
-        console.log('[WhatsApp Webhook Raw Payload]', JSON.stringify(body, null, 2))
 
         // We only care about new incoming messages
         if (body.event !== 'messages.upsert') {
-            console.log(`[WhatsApp Webhook] Ignored event: ${body.event}`)
             return NextResponse.json({ received: true, reason: 'ignored_event' })
         }
 
@@ -81,7 +79,6 @@ export async function POST(req: Request) {
         })
 
         if (!establishment) {
-            console.log(`[WhatsApp Webhook] Instance ${instanceName} not found or disabled.`)
             return NextResponse.json({ received: true, reason: 'tenant_not_found' })
         }
 
@@ -95,8 +92,6 @@ export async function POST(req: Request) {
 
         // Send the reply back
         await sendWhatsAppMessage(establishment.id, senderPhone, replyText)
-
-        console.log(`[WhatsApp Webhook] Sent greeting auto-reply to ${senderPhone} for tenant ${establishment.name}`)
 
         return NextResponse.json({ received: true })
     } catch (error) {

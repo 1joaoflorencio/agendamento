@@ -12,7 +12,6 @@ export async function sendWhatsAppMessage(tenantId: string, phone: string, text:
     })
 
     if (!establishment || !establishment.whatsapp_enabled || !establishment.whatsapp_instance_name || !establishment.whatsapp_api_key) {
-        console.log(`[WhatsApp Skip] Integração desativada para tenant ${tenantId}`)
         return { success: false, reason: 'disabled' }
     }
 
